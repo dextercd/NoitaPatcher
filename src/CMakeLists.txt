@@ -13,6 +13,6 @@ target_include_directories(noitapatcher PRIVATE ${LUA_INCLUDE_DIR})
 
 install(
     TARGETS noitapatcher
-    COMPONENT np
+    COMPONENT NoitaPatcher
     LIBRARY DESTINATION .
 )
