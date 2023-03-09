@@ -11,23 +11,29 @@
 #include <windows.h>
 #include <dbghelp.h>
 
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+}
+
+#include "noita.hpp"
+
 const std::uint8_t function_intro[]{
     0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf0
-};
-
-struct vec2 {
-    float x;
-    float y;
-};
-
-struct Entity {
-    int EntityId;
 };
 
 struct executable_info {
     std::uint8_t* text_start;
     std::uint8_t* text_end;
 };
+
+struct FireWandInfo {
+    std::uint32_t* rng;
+    fire_wand_function_t func;
+};
+
+fire_wand_function_t original_fire_wand_function;
+lua_State* current_lua_state;
 
 class ThisExecutableInfo {
     executable_info info;
@@ -58,22 +64,6 @@ public:
     }
 };
 
-using fire_wand_function_t = void(__fastcall*)(
-    Entity* shooter, Entity* verlet_parent,
-    const vec2& position,
-    Entity* projectile,
-    int unknown1, int unknown2, char unknown3,
-    bool send_message,
-    float target_x, float target_y);
-
-fire_wand_function_t original_fire_wand_function;
-
-struct FireWandInfo {
-    int* rng;
-    fire_wand_function_t func;
-
-};
-
 FireWandInfo find_fire_wand()
 {
     FireWandInfo ret{};
@@ -90,7 +80,7 @@ FireWandInfo find_fire_wand()
         std::begin(fire_wand_bytes), std::end(fire_wand_bytes)
     );
 
-    ret.rng = *(int**)(fire_wand_cmp + 15);
+    ret.rng = *(std::uint32_t**)(fire_wand_cmp + 15);
     ret.func = (fire_wand_function_t)std::find_end(
         noita.text_start, fire_wand_cmp,
         std::begin(function_intro), std::end(function_intro)
@@ -119,17 +109,24 @@ void __cdecl fire_wand_hook(
     }
     #endif
 
-    std::cout << "\n\n";
-    std::cout << "Shooter: " << shooter;
-    if (shooter)
-        std::cout << " (" << shooter->EntityId << ")";
-    std::cout << '\n';
+    if (current_lua_state) {
+        lua_getglobal(current_lua_state, "print_error");
+        lua_getglobal(current_lua_state, "OnWandFired");
 
-    // I can read the rng
-    std::cout << "rng: " << *fire_wand_info.rng << '\n';
+        // OnWandFired(shooter_id:int, rng:int)
 
-    // And I can change it! (Makes the wand always fire with the same spread)
-    *fire_wand_info.rng = 3289471;
+        if (shooter)
+            lua_pushinteger(current_lua_state, shooter->EntityId);
+        else
+            lua_pushnil(current_lua_state);
+
+        lua_pushinteger(current_lua_state, *fire_wand_info.rng);
+
+        if (lua_pcall(current_lua_state, 2, 0, -4))
+            lua_pop(current_lua_state, 1); // Pop error
+
+        lua_pop(current_lua_state, 1); // Pop error handler
+    }
 
     original_fire_wand_function(
         shooter, verlet_parent,
@@ -148,7 +145,7 @@ void __cdecl fire_wand_hook(
 
 
 extern "C" __declspec(dllexport)
-void hookinstall()
+void install_hooks()
 {
     MH_Initialize();
 
@@ -163,14 +160,69 @@ void hookinstall()
     MH_EnableHook((void*)fire_wand_info.func);
 }
 
+int SetWandSpreadRNG(lua_State* L)
+{
+    std::uint32_t rng_value = luaL_checkinteger(L, 1);
+    *fire_wand_info.rng = rng_value;
+    return 0;
+}
+
+int luaclose_noitapatcher(lua_State* L);
+
+static const luaL_Reg nplib[] = {
+    {"SetWandSpreadRNG", SetWandSpreadRNG},
+    {},
+};
+
+bool np_initialised = false;
+
+extern "C" __declspec(dllexport)
+int luaopen_noitapatcher(lua_State* L)
+{
+    std::cout << "luaopen_noitapatcher" << L << '\n';
+
+    current_lua_state = L;
+    luaL_register(L, "noitapatcher", nplib);
+
+    // Detect module unload
+    lua_newuserdata(L, 0);
+    lua_newtable(L);
+    lua_pushcclosure(L, luaclose_noitapatcher, 0);
+    lua_setfield(L, -2, "__gc");
+    lua_setmetatable(L, -2);
+    lua_setfield(L, LUA_REGISTRYINDEX, "luasteam_shutdown");
+
+    if (!np_initialised) {
+        install_hooks();
+        np_initialised = true;
+    }
+
+    return 1;
+}
+
+int luaclose_noitapatcher(lua_State* L)
+{
+    std::cout << "luaclose_noitapatcher" << L << '\n';
+
+    if (current_lua_state != L)
+        return 0;  // Different Lua state somehow? ignore
+
+    // The Lua state is about to go away, stop using it
+    current_lua_state = nullptr;
+
+    return 0;
+}
 
 /*
 
-ffi = require("ffi")
-ffi.cdef([[
-void hookinstall();
-]])
-np = ffi.load("mods/noitapatcher.dll")
-np.hookinstall()
+package.cpath = package.cpath .. ";./mods/?.dll"
+np = require("noitapatcher")
+
+function OnWandFired(entity, rng)
+    print(entity)
+    print(rng)
+
+    np.SetWandSpreadRNG(0)
+end
 
 */

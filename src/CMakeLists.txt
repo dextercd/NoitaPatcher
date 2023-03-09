@@ -5,7 +5,7 @@ add_library(noitapatcher MODULE
 target_link_libraries(noitapatcher
     PRIVATE
         minhook
-        dbghelp
+        LuaJIT_library
 )
 
 install(
