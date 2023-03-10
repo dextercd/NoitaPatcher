@@ -190,7 +190,7 @@ int luaopen_noitapatcher(lua_State* L)
     lua_pushcclosure(L, luaclose_noitapatcher, 0);
     lua_setfield(L, -2, "__gc");
     lua_setmetatable(L, -2);
-    lua_setfield(L, LUA_REGISTRYINDEX, "luasteam_shutdown");
+    lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
 
     if (!np_initialised) {
         install_hooks();
