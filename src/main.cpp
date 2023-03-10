@@ -111,9 +111,9 @@ void __cdecl fire_wand_hook(
 
     if (current_lua_state) {
         lua_getglobal(current_lua_state, "print_error");
-        lua_getglobal(current_lua_state, "OnWandFired");
+        lua_getglobal(current_lua_state, "OnProjectileFired");
 
-        // OnWandFired(shooter_id:int, rng:int)
+        // OnProjectileFired(shooter_id:int, rng:int)
 
         if (shooter)
             lua_pushinteger(current_lua_state, shooter->EntityId);
@@ -218,7 +218,7 @@ int luaclose_noitapatcher(lua_State* L)
 package.cpath = package.cpath .. ";./mods/?.dll"
 np = require("noitapatcher")
 
-function OnWandFired(entity, rng)
+function OnProjectileFired(entity, rng)
     print(entity)
     print(rng)
 
