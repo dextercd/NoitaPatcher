@@ -96,7 +96,7 @@ void __cdecl fire_wand_hook(
         Entity* projectile,
         int unknown1, int unknown2, char unknown3,
         bool send_message,
-        float target_x, float target_y, int extra)
+        float target_x, float target_y)
 {
     Entity* shooter;
     Entity* verlet_parent;
@@ -109,24 +109,48 @@ void __cdecl fire_wand_hook(
     }
     #endif
 
-    if (current_lua_state) {
-        lua_getglobal(current_lua_state, "print_error");
-        lua_getglobal(current_lua_state, "OnProjectileFired");
+    auto do_callback = [&] (const char* cbname) {
+        if (!current_lua_state)
+            return;
 
-        // OnProjectileFired(shooter_id:int, rng:int)
+        if (current_lua_state) {
+            lua_getglobal(current_lua_state, "print_error");
+            lua_getglobal(current_lua_state, cbname);
 
-        if (shooter)
-            lua_pushinteger(current_lua_state, shooter->EntityId);
-        else
-            lua_pushnil(current_lua_state);
+            // <Callback>(shooter_id:int, projectile_id:int, rng:int, position_x:number, position_y:number, target_x:number, target_y:number, send_message:boolean, unknown1:int, unknown2:int, unknown3:int)
 
-        lua_pushinteger(current_lua_state, *fire_wand_info.rng);
+            if (shooter)
+                lua_pushinteger(current_lua_state, shooter->EntityId);
+            else
+                lua_pushnil(current_lua_state);
 
-        if (lua_pcall(current_lua_state, 2, 0, -4))
-            lua_pop(current_lua_state, 1); // Pop error
+            if (projectile)
+                lua_pushinteger(current_lua_state, projectile->EntityId);
+            else
+                lua_pushnil(current_lua_state);
 
-        lua_pop(current_lua_state, 1); // Pop error handler
-    }
+            lua_pushinteger(current_lua_state, *fire_wand_info.rng);
+
+            lua_pushnumber(current_lua_state, position.x);
+            lua_pushnumber(current_lua_state, position.y);
+
+            lua_pushnumber(current_lua_state, target_x);
+            lua_pushnumber(current_lua_state, target_y);
+
+            lua_pushboolean(current_lua_state, send_message);
+
+            lua_pushinteger(current_lua_state, unknown1);
+            lua_pushinteger(current_lua_state, unknown2);
+            lua_pushinteger(current_lua_state, unknown3);
+
+            if (lua_pcall(current_lua_state, 11, 0, -13))
+                lua_pop(current_lua_state, 1); // Pop error
+
+            lua_pop(current_lua_state, 1); // Pop error handler
+        }
+    };
+
+    do_callback("OnProjectileFired");
 
     original_fire_wand_function(
         shooter, verlet_parent,
@@ -136,6 +160,9 @@ void __cdecl fire_wand_hook(
         send_message,
         target_x, target_y
     );
+
+    do_callback("OnProjectileFiredPost");
+
     #ifdef __GNUC__
     asm("add $0x20, %esp");
     #else
@@ -218,7 +245,7 @@ int luaclose_noitapatcher(lua_State* L)
 package.cpath = package.cpath .. ";./mods/?.dll"
 np = require("noitapatcher")
 
-function OnProjectileFired(entity, rng)
+function OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, unknown2, unknown3)
     print(entity)
     print(rng)
 
