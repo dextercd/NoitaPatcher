@@ -160,7 +160,7 @@ void install_hooks()
     MH_EnableHook((void*)fire_wand_info.func);
 }
 
-int SetWandSpreadRNG(lua_State* L)
+int SetProjectileSpreadRNG(lua_State* L)
 {
     std::uint32_t rng_value = luaL_checkinteger(L, 1);
     *fire_wand_info.rng = rng_value;
@@ -170,7 +170,7 @@ int SetWandSpreadRNG(lua_State* L)
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
-    {"SetWandSpreadRNG", SetWandSpreadRNG},
+    {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {},
 };
 
@@ -222,7 +222,7 @@ function OnProjectileFired(entity, rng)
     print(entity)
     print(rng)
 
-    np.SetWandSpreadRNG(0)
+    np.SetProjectileSpreadRNG(0)
 end
 
 */
