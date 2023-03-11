@@ -7,25 +7,14 @@
 
 #include <MinHook.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <dbghelp.h>
-
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
 }
 
+#include "executable_info.hpp"
 #include "noita.hpp"
-
-const std::uint8_t function_intro[]{
-    0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf0
-};
-
-struct executable_info {
-    std::uint8_t* text_start;
-    std::uint8_t* text_end;
-};
+#include "x86.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -35,34 +24,6 @@ struct FireWandInfo {
 fire_wand_function_t original_fire_wand_function;
 lua_State* current_lua_state;
 
-class ThisExecutableInfo {
-    executable_info info;
-
-    ThisExecutableInfo()
-    {
-        void* exe_location = GetModuleHandleA(nullptr);
-        IMAGE_NT_HEADERS* header = ImageNtHeader(exe_location);
-
-        auto section_byte_start = (char*)&header->OptionalHeader + header->FileHeader.SizeOfOptionalHeader;
-        auto section_begin = (IMAGE_SECTION_HEADER*)section_byte_start;
-        auto section_end = section_begin + header->FileHeader.NumberOfSections;
-
-        auto text_section = std::find_if(section_begin, section_end,
-            [](IMAGE_SECTION_HEADER& section) {
-                return std::strcmp((char*)section.Name, ".text") == 0;
-            });
-
-        info.text_start = (std::uint8_t*)exe_location + text_section->VirtualAddress;
-        info.text_end = info.text_start + text_section->SizeOfRawData;
-    }
-
-public:
-    static executable_info get()
-    {
-        static ThisExecutableInfo instance;
-        return instance.info;
-    }
-};
 
 FireWandInfo find_fire_wand()
 {
@@ -133,12 +94,12 @@ void __cdecl fire_wand_hook(
             // <Callback>(shooter_id:int, projectile_id:int, rng:int, position_x:number, position_y:number, target_x:number, target_y:number, send_message:boolean, unknown1:int, unknown2:int, unknown3:int)
 
             if (shooter)
-                lua_pushinteger(current_lua_state, shooter->EntityId);
+                lua_pushinteger(current_lua_state, EntityGetId(shooter));
             else
                 lua_pushnil(current_lua_state);
 
             if (projectile)
-                lua_pushinteger(current_lua_state, projectile->EntityId);
+                lua_pushinteger(current_lua_state, EntityGetId(projectile));
             else
                 lua_pushnil(current_lua_state);
 

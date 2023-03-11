@@ -1,5 +1,6 @@
 add_library(noitapatcher MODULE
     main.cpp
+    executable_info.cpp
 )
 
 target_link_libraries(noitapatcher

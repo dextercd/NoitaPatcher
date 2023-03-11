@@ -1,12 +1,21 @@
 #ifndef NP_NOITA_HPP
 #define NP_NOITA_HPP
 
+#include "executable_info.hpp"
+
 struct vec2 {
     float x;
     float y;
 };
 
-struct Entity {
+struct Entity;
+
+struct NormalEntity {
+    int EntityId;
+};
+
+struct DevEntity {
+    void* vtable;
     int EntityId;
 };
 
@@ -19,5 +28,15 @@ using fire_wand_function_t = void(__fastcall*)(
     int unknown1, int unknown2, char unknown3,
     bool send_message,
     float target_x, float target_y);
+
+inline int EntityGetId(Entity* entity)
+{
+    executable_info noita = ThisExecutableInfo::get();
+
+    if (noita.is_dev_build)
+        return ((DevEntity*)entity)->EntityId;
+
+    return ((NormalEntity*)entity)->EntityId;
+}
 
 #endif // Header guard
