@@ -70,8 +70,11 @@ FireWandInfo find_fire_wand()
     executable_info noita = ThisExecutableInfo::get();
 
     const std::uint8_t fire_wand_bytes[] {
-        0x80, 0xbf, 0xc0, 0x02, 0x00, 0x00, 0x00, 0x0f,
-        0x84, 0x1a, 0x02, 0x00, 0x00,
+        0x80, 0xbf, 0xc0, 0x02, 0x00, 0x00, 0x00, 0x0f, 0x84,
+    };
+
+    const std::uint8_t fire_wand_bytes_dev[] {
+        0x80, 0xbf, 0xc8, 0x02, 0x00, 0x00, 0x00, 0x0f, 0x84,
     };
 
     // Location of a cmp instruction in the fire wand function
@@ -79,6 +82,16 @@ FireWandInfo find_fire_wand()
         noita.text_start, noita.text_end,
         std::begin(fire_wand_bytes), std::end(fire_wand_bytes)
     );
+
+    if (fire_wand_cmp == noita.text_end) {
+        fire_wand_cmp = std::search(
+            noita.text_start, noita.text_end,
+            std::begin(fire_wand_bytes_dev), std::end(fire_wand_bytes_dev)
+        );
+
+        if (fire_wand_cmp == noita.text_end)
+            std::cerr << "Couldn't find fire wand function.\n";
+    }
 
     ret.rng = *(std::uint32_t**)(fire_wand_cmp + 15);
     ret.func = (fire_wand_function_t)std::find_end(
