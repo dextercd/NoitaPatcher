@@ -5,6 +5,11 @@ project(NoitaPatcher
     LANGUAGES CXX C
 )
 
+# Needed for MINGW to find the LuaJIT dll
+if (MINGW)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES .dll ${CMAKE_FIND_LIBRARY_SUFFIXES})
+endif()
+
 # Don't add lib suffix when crosscompiling from Linux
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_SHARED_MODULE_PREFIX "")
