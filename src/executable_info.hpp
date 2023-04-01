@@ -9,6 +9,8 @@ struct executable_info {
     bool is_dev_build = false;
 };
 
+executable_info get_executable_info(void* module);
+
 class ThisExecutableInfo {
     executable_info info;
 
