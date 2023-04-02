@@ -20,25 +20,25 @@ jobs:
           cd LuaJIT-2.0.4\LuaJIT-2.0.4\src
           msvcbuild.bat
 
+      - name: Install documentation dependencies
+        run: |
+          py -3.11 -m venv venv
+          ./venv/Scripts/activate.ps1
+          python -m pip install -r doc_requirements.txt
 
       - name: build
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86 10.0.22000.0 -vcvars_ver=14
+          call ".\venv\Scripts\activate.bat"
           mkdir build
           cmake -S . -B build -G "Ninja Multi-Config" ^
             -DCMAKE_CXX_FLAGS="/D_WIN32_WINNT=0x0601 /DWINVER=0x0601 /DWIN32 /D_WINDOWS /EHsc /MD" ^
-            -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src
+            -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src ^
+            -DNOITAPATCHER_DOCS=ON
 
           cmake --build build --config Release && ^
           cmake --build build --config Debug
-
-      - name: Run CTest
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86 10.0.22000.0 -vcvars_ver=14
-          cd build
-          ctest --output-on-failure -C Release
 
       - name: Run CPack
         shell: cmd
@@ -47,11 +47,18 @@ jobs:
           cd build
           cpack -C "Release"
 
-      - name: Upload package artifacts
+      - name: Upload build zip
         uses: actions/upload-artifact@v3
         with:
           name: package
           path: build/*.zip
+          retention-days: 2
+
+      - name: Upload docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: build/Documentation/_build/
           retention-days: 2
 
       - name: Create release
@@ -60,3 +67,24 @@ jobs:
         with:
           files: |
             build/*.zip
+
+  upload-docs:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/release-')
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: docs
+
+      - name: nojekyll
+        run: touch docs/.nojekyll
+
+      - name: Update site
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: 'docs'
