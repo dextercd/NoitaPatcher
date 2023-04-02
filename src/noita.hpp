@@ -3,6 +3,24 @@
 
 #include "executable_info.hpp"
 
+template<class T>
+struct vs2013_vector {
+    T* begin_;
+    T* end_;
+    T* capacity_end_;
+
+    T* data() { return begin_; }
+
+    T& front() { return *begin_; }
+    T& back() { return *(end_ - 1); }
+
+    std::size_t size() const { return end_ - begin_; }
+    bool empty() const { return size() == 0; }
+
+    T* begin() { return begin_; }
+    T* end() { return end_; }
+};
+
 struct vec2 {
     float x;
     float y;
@@ -19,6 +37,21 @@ struct DevEntity {
     void* vtable;
     int EntityId;
 };
+
+struct DeathMatch {
+    void * application_vtable;
+    void * mouse_listener_vtable;
+    void * keyboard_listener_vtable;
+    char unk;
+    void * joystick_listener_vtable;
+    void * simple_ui_listener_vtable;
+    void * event_listener_vtable;
+    char dont_know1[60];
+    vs2013_vector<Entity*> player_entities;
+    char dont_know2[100];
+};
+
+static_assert(sizeof(DeathMatch) == 200);
 
 // Note: It's really a mix between __fastcall (uses registers) and
 // __cdecl (stack cleanup is done by caller).

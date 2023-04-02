@@ -31,6 +31,8 @@ EntityManager* entity_manager;
 entity_get_by_id_t entity_get_by_id;
 set_active_held_entity_t set_active_held_entity;
 
+DeathMatch* g_deathmatch;
+
 FireWandInfo find_fire_wand()
 {
     FireWandInfo ret{};
@@ -254,6 +256,24 @@ void find_entity_funcs()
     );
 }
 
+void find_deathmatch()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto pat = make_pattern(
+        Bytes{0x33, 0xc0, 0x87, 0x06, 0x89, 0x3d},
+        Capture{"g_deathmatch", 4},
+        Bytes{0x8b, 0xc7, 0x8b, 0x4d, 0xf4, 0x64, 0x89, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x59, 0x5f, 0x5e, 0x8b, 0xe5, 0x5d, 0xc3}
+    );
+
+    auto result = pat.search(noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find deathmatch struct\n";
+        return;
+    }
+
+    g_deathmatch = *result.get<DeathMatch**>("g_deathmatch");
+}
+
 int SetProjectileSpreadRNG(lua_State* L)
 {
     std::uint32_t rng_value = luaL_checkinteger(L, 1);
@@ -284,12 +304,22 @@ int SetActiveHeldEntity(lua_State* L)
     return 0;
 }
 
+// SetPlayerEntity(entity_id: int)
+int SetPlayerEntity(lua_State* L)
+{
+    int entity_id = luaL_checkinteger(L, 1);
+    auto entity = entity_get_by_id(entity_manager, entity_id);
+    g_deathmatch->player_entities.front() = entity;
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
     {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
     {"SetActiveHeldEntity", SetActiveHeldEntity},
+    {"SetPlayerEntity", SetPlayerEntity},
     {},
 };
 
@@ -300,6 +330,7 @@ int luaopen_noitapatcher(lua_State* L)
 {
     std::cout << "luaopen_noitapatcher" << L << '\n';
     find_entity_funcs();
+    find_deathmatch();
 
     current_lua_state = L;
     luaL_register(L, "noitapatcher", nplib);
