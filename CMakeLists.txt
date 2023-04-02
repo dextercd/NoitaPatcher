@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
+set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
+
 project(NoitaPatcher
     VERSION 1.3.0
     LANGUAGES CXX C
@@ -29,4 +31,7 @@ FetchContent_MakeAvailable(MinHook)
 find_package(Lua REQUIRED)
 
 add_subdirectory(src)
+if (NOITAPATCHER_DOCS)
+    add_subdirectory(Documentation)
+endif()
 add_subdirectory(packaging)

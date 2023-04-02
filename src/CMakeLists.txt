@@ -25,5 +25,5 @@ target_link_libraries(noitadis PRIVATE memory_util)
 install(
     TARGETS noitapatcher
     COMPONENT NoitaPatcher
-    LIBRARY DESTINATION .
+    LIBRARY DESTINATION NoitaPatcher
 )
