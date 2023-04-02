@@ -47,7 +47,7 @@ using platform_shooter_damage_message_handler_t =
 using entity_get_by_id_t =
     Entity* (__thiscall*)(EntityManager*, int entity_id);
 
-using set_active_held_entity =
+using set_active_held_entity_t =
     void (__fastcall*)(Entity* entity, Entity* item_entity, bool unk, bool make_noise);
 
 inline int EntityGetId(Entity* entity)

@@ -15,6 +15,7 @@ extern "C" {
 #include "executable_info.hpp"
 #include "noita.hpp"
 #include "x86.hpp"
+#include "memory_pattern.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -25,6 +26,10 @@ fire_wand_function_t original_fire_wand_function;
 platform_shooter_damage_message_handler_t original_ps_damage_message_handler;
 lua_State* current_lua_state;
 int player_entity_id = -1;
+
+EntityManager* entity_manager;
+entity_get_by_id_t entity_get_by_id;
+set_active_held_entity_t set_active_held_entity;
 
 FireWandInfo find_fire_wand()
 {
@@ -205,6 +210,50 @@ void install_hooks()
     MH_EnableHook((void*)ps_damage_handler);
 }
 
+void find_entity_funcs()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto entity_pat = make_pattern(
+        Bytes{0x8b, 0x0d},
+        Capture{"EntityManager", 4},
+        Bytes{0x83, 0xc4, 0x08, 0x50, 0xe8},
+        Capture{"EntityGet", 4},
+        Bytes{0x85, 0xc0, 0x74, 0xe0, 0x8b, 0xc8, 0xe8},
+        Capture{"EntityTreeSetDeathState", 4},
+        Bytes{0xb8, 0x01, 0x00, 0x00, 0x00}
+    );
+    auto entity_result = entity_pat.search(noita.text_start, noita.text_end);
+
+    if (!entity_result) {
+        std::cerr << "Couldn't find entity manager funcs\n";
+        return;
+    }
+
+    entity_manager = *entity_result.get<EntityManager**>("EntityManager");
+    entity_get_by_id = (entity_get_by_id_t)entity_result.get_rela_call("EntityGet");
+
+    auto set_active_pat = make_pattern(
+        Bytes{0x85}, Pad{1},
+        Bytes{0x0f, 0x84}, Pad{4},
+        Bytes{0x85}, Pad{1},
+        Bytes{0x74}, Pad{1},
+        Bytes{0x8b, 0x4b, 0x50, 0x89},
+        Pad{1},
+        Bytes{0x50, 0x8b, 0x4b, 0x54}
+    );
+    auto set_active_result = set_active_pat.search(noita.text_start, noita.text_end);
+
+    if (!set_active_result) {
+        std::cerr << "Couldn't find set active inventory function\n";
+        return;
+    }
+
+    set_active_held_entity = (set_active_held_entity_t)std::find_end(
+        noita.text_start, (std::uint8_t*)set_active_result.ptr,
+        std::begin(function_intro), std::end(function_intro)
+    );
+}
+
 int SetProjectileSpreadRNG(lua_State* L)
 {
     std::uint32_t rng_value = luaL_checkinteger(L, 1);
@@ -218,11 +267,29 @@ int RegisterPlayerEntityId(lua_State* L)
     return 0;
 }
 
+// SetActiveHeldEntity(entity_id:int, item_id:int, unknown:bool, make_noise:bool)
+int SetActiveHeldEntity(lua_State* L)
+{
+    int entity_id = luaL_checkinteger(L, 1);
+    int item_id = luaL_checkinteger(L, 2);
+    bool unknown = lua_toboolean(L, 3);
+    bool make_noise = lua_toboolean(L, 4);
+
+    auto entity = entity_get_by_id(entity_manager, entity_id);
+    auto item = entity_get_by_id(entity_manager, item_id);
+    if (!entity)
+        luaL_error(L, "Entity %d not found.", entity_id);
+
+    set_active_held_entity(entity, item, unknown, make_noise);
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
     {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
+    {"SetActiveHeldEntity", SetActiveHeldEntity},
     {},
 };
 
@@ -232,6 +299,7 @@ extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
 {
     std::cout << "luaopen_noitapatcher" << L << '\n';
+    find_entity_funcs();
 
     current_lua_state = L;
     luaL_register(L, "noitapatcher", nplib);
@@ -254,7 +322,7 @@ int luaopen_noitapatcher(lua_State* L)
 
 int luaclose_noitapatcher(lua_State* L)
 {
-    std::cout << "luaclose_noitapatcher" << L << '\n';
+    std::cout << "luaclose_noitapatcher " << L << '\n';
 
     if (current_lua_state != L)
         return 0;  // Different Lua state somehow? ignore
@@ -269,12 +337,11 @@ int luaclose_noitapatcher(lua_State* L)
 
 package.cpath = package.cpath .. ";./mods/?.dll"
 np = require("noitapatcher")
-
 function OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, unknown2, unknown3)
-    print(entity)
-    print(rng)
-
+    print(tostring(shooter_id))
+    print(tostring(rng))
     np.SetProjectileSpreadRNG(0)
 end
+OnProjectileFiredPost = OnProjectileFired
 
 */
