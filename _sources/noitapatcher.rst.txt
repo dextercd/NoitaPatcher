@@ -1,0 +1,4 @@
+noitapatcher
+------------
+
+.. lua:automodule:: noitapatcher
