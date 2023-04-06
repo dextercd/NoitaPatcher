@@ -7,7 +7,7 @@ local noitapatcher = {}
 ---@param rng_value integer New RNG state value
 function noitapatcher.SetProjectileSpreadRNG(rng_value) end
 
----Disable the red flash upon taking damage for all entities except the one specified by entity_id.
+---Disable the red flash upon taking damage for all entities with a PlatformShooterPlayerComponent except for the one specified by entity_id.
 ---You can restore the original behaviour by passing in -1 for the entity_id.
 ---@param entity_id integer ID of the only entity for which to do the damage flash.
 function noitapatcher.RegisterPlayerEntityId(entity_id) end
