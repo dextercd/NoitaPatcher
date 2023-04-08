@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
 
 project(NoitaPatcher
-    VERSION 1.3.2
+    VERSION 1.3.3
     LANGUAGES CXX C
 )
 
@@ -27,6 +27,16 @@ FetchContent_Declare(MinHook
     GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
     GIT_TAG 49d03ad118cf7f6768c79a8f187e14b8f2a07f94)
 FetchContent_MakeAvailable(MinHook)
+
+
+FetchContent_Declare(Zydis
+    GIT_REPOSITORY https://github.com/zyantific/zydis.git
+    GIT_TAG 4a661c659edaa51c3a459a885add92a216c87612
+)
+option(ZYDIS_BUILD_TOOLS "" OFF)
+option(ZYDIS_BUILD_EXAMPLES "" OFF)
+option(ZYDIS_BUILD_DOXYGEN "" OFF)
+FetchContent_MakeAvailable(Zydis)
 
 find_package(Lua REQUIRED)
 
