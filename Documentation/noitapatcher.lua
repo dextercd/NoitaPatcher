@@ -1,4 +1,5 @@
----@module noitapatcher
+---@meta 'noitapatcher'
+
 local noitapatcher = {}
 
 ---Sets Noita's internal RNG state to the specified value.
