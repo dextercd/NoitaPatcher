@@ -1,4 +1,5 @@
 ---@meta 'noitapatcher'
+---@module noitapatcher
 
 local noitapatcher = {}
 
