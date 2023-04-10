@@ -4,8 +4,14 @@
 #include <cstdint>
 
 struct executable_info {
+    void* module;
+
     std::uint8_t* text_start;
     std::uint8_t* text_end;
+
+    std::uint8_t* rdata_start;
+    std::uint8_t* rdata_end;
+
     bool is_dev_build = false;
 };
 

@@ -11,6 +11,8 @@
 executable_info get_executable_info(void* module)
 {
     executable_info info;
+    info.module = module;
+
     IMAGE_NT_HEADERS* header = ImageNtHeader(module);
 
     auto section_byte_start = (char*)&header->OptionalHeader + header->FileHeader.SizeOfOptionalHeader;
@@ -21,9 +23,15 @@ executable_info get_executable_info(void* module)
         [](IMAGE_SECTION_HEADER& section) {
             return std::strcmp((char*)section.Name, ".text") == 0;
         });
+    auto rdata_section = std::find_if(section_begin, section_end,
+        [](IMAGE_SECTION_HEADER& section) {
+            return std::strcmp((char*)section.Name, ".rdata") == 0;
+        });
 
     info.text_start = (std::uint8_t*)module + text_section->VirtualAddress;
     info.text_end = info.text_start + text_section->SizeOfRawData;
+    info.rdata_start = (std::uint8_t*)module + rdata_section->VirtualAddress;
+    info.rdata_end = info.rdata_start + rdata_section->SizeOfRawData;
 
     char filename[MAX_PATH];
     GetModuleFileName((HMODULE)module, filename, MAX_PATH);
