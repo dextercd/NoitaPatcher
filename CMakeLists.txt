@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
 
 project(NoitaPatcher
-    VERSION 1.3.3
+    VERSION 1.4.0
     LANGUAGES CXX C
 )
 
