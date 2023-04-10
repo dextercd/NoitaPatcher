@@ -6,7 +6,10 @@
 #include <string>
 #include <string_view>
 #include <cstring>
+#include <memory>
 #include <initializer_list>
+
+struct executable_info;
 
 struct Pad {
     int amount;
@@ -31,11 +34,20 @@ struct Bytes {
     {
     }
 
-    Bytes(std::initializer_list<std::uint8_t> bytes)
-        : data(bytes.size())
+    Bytes(std::vector<char> bytes)
+        : data{std::move(bytes)}
     {
-        std::memcpy(std::data(data), std::data(bytes), bytes.size());
     }
+
+    Bytes(std::initializer_list<std::uint8_t> init)
+        : data(init.size())
+    {
+        std::memcpy(std::data(data), std::data(init), init.size());
+    }
+};
+
+struct Call {
+    std::uint32_t target;
 };
 
 struct CapturePosition {
@@ -44,13 +56,13 @@ struct CapturePosition {
 };
 
 struct FindResult {
-    void* ptr = nullptr;
+    const void* ptr = nullptr;
     std::vector<CapturePosition> captures;
 
     FindResult(std::nullptr_t) {}
-    FindResult(void* ptr_, std::vector<CapturePosition> captures_)
+    FindResult(const void* ptr_, std::vector<CapturePosition> captures_)
         : ptr{ptr_}
-        , captures{captures_}
+        , captures{std::move(captures_)}
     {
     }
 
@@ -77,23 +89,37 @@ struct FindResult {
     }
 };
 
+struct PatternCheckArgs {
+    const void* location;
+    std::uint32_t load_location;
+};
+
+struct PatternCheck {
+    virtual const void* search(const void* begin, const void* end) = 0;
+    virtual bool check(const PatternCheckArgs& at) = 0;
+    virtual ~PatternCheck() {}
+};
+
 struct Pattern {
     struct PatternPart {
         std::size_t offset;
-        std::vector<char> bytes;
+        std::size_t size;
+        std::shared_ptr<PatternCheck> check;
+        // std::vector<char> bytes;
     };
     std::vector<PatternPart> parts;
 
     std::vector<CapturePosition> captures;
     int cursor = 0;
 
+    ~Pattern();
+
     template<class T>
     void add(const Raw<T>& raw)
     {
         std::vector<char> bytes(sizeof(T));
         std::memcpy(&bytes[0], &raw.value, sizeof(T));
-        parts.emplace_back(cursor, std::move(bytes));
-        cursor += sizeof(T);
+        add(Bytes{std::move(bytes)});
     }
 
     void add(Pad padding)
@@ -104,19 +130,15 @@ struct Pattern {
     void add(Capture capture)
     {
         captures.emplace_back(cursor, std::move(capture.name));
-        cursor += capture.size;
+        add(Pad{capture.size});
     }
 
-    void add(Bytes b)
-    {
-        auto size = b.data.size();
-        parts.emplace_back(cursor, std::move(b.data));
-        cursor += size;
-    }
+    void add(Bytes b);
+    void add(Call call);
 
     std::size_t size()
     {
-        return parts.back().offset + parts.back().bytes.size();
+        return parts.back().offset + parts.back().size;
     }
 
     std::size_t following_size()
@@ -127,10 +149,10 @@ struct Pattern {
         return size() - parts[1].offset;
     }
 
-    FindResult search(void* begin, void* end);
+    FindResult search(const executable_info& exe, const void* begin, const void* end);
 
 private:
-    FindResult make_result(void* ptr);
+    FindResult make_result(const void* ptr);
 };
 
 template<class... Args>
