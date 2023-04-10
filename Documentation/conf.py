@@ -34,7 +34,7 @@ html_theme_options = {
     "github_button": True,
     "github_user": "dextercd",
     "github_repo": "NoitaPatcher",
-    "page_width": "1000px",
+    "page_width": "1200px",
     "sidebar_width": "300px",
     "show_powered_by": False,
     "extra_nav_links": {
