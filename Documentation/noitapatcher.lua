@@ -27,4 +27,9 @@ function noitapatcher.SetActiveHeldEntity(entity_id, item_id, unknown, make_nois
 ---@param entity_id integer The entity to make the game think of as the player.
 function noitapatcher.SetPlayerEntity(entity_id) end
 
+---Enables or disables game simulate pausing when opening escape or wand menu.
+---You can only disable pausing at the moment, reenabling is not supported.
+---@param enabled boolean Whether to enable or disable pausing.
+function noitapatcher.EnableGameSimulatePausing(enabled) end
+
 return noitapatcher
