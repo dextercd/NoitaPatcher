@@ -3,8 +3,15 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(memory_util STATIC
     executable_info.cpp
     memory_pattern.cpp
+    x86.cpp
 )
-target_link_libraries(memory_util PRIVATE dbghelp)
+target_link_libraries(memory_util
+    PRIVATE
+        dbghelp
+    PUBLIC
+        Zydis
+        minhook
+)
 
 add_library(noitapatcher MODULE
     main.cpp
@@ -12,7 +19,6 @@ add_library(noitapatcher MODULE
 
 target_link_libraries(noitapatcher
     PRIVATE
-        minhook
         memory_util
         ${LUA_LIBRARIES}
 )
