@@ -83,6 +83,9 @@ using entity_get_by_id_t =
 using set_active_held_entity_t =
     void (__fastcall*)(Entity* entity, Entity* item_entity, bool unk, bool make_noise);
 
+using call_scripts_on_pause_pre_update_t =
+    void (__stdcall*)();
+
 inline int EntityGetId(Entity* entity)
 {
     executable_info noita = ThisExecutableInfo::get();

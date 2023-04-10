@@ -16,6 +16,7 @@ extern "C" {
 #include "noita.hpp"
 #include "x86.hpp"
 #include "memory_pattern.hpp"
+#include "game_pause.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -224,7 +225,7 @@ void find_entity_funcs()
         Capture{"EntityTreeSetDeathState", 4},
         Bytes{0xb8, 0x01, 0x00, 0x00, 0x00}
     );
-    auto entity_result = entity_pat.search(noita.text_start, noita.text_end);
+    auto entity_result = entity_pat.search(noita, noita.text_start, noita.text_end);
 
     if (!entity_result) {
         std::cerr << "Couldn't find entity manager funcs\n";
@@ -243,7 +244,7 @@ void find_entity_funcs()
         Pad{1},
         Bytes{0x50, 0x8b, 0x4b, 0x54}
     );
-    auto set_active_result = set_active_pat.search(noita.text_start, noita.text_end);
+    auto set_active_result = set_active_pat.search(noita, noita.text_start, noita.text_end);
 
     if (!set_active_result) {
         std::cerr << "Couldn't find set active inventory function\n";
@@ -265,7 +266,7 @@ void find_deathmatch()
         Bytes{0x8b, 0xc7, 0x8b, 0x4d, 0xf4, 0x64, 0x89, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x59, 0x5f, 0x5e, 0x8b, 0xe5, 0x5d, 0xc3}
     );
 
-    auto result = pat.search(noita.text_start, noita.text_end);
+    auto result = pat.search(noita, noita.text_start, noita.text_end);
     if (!result) {
         std::cerr << "Couldn't find deathmatch struct\n";
         return;
@@ -273,6 +274,7 @@ void find_deathmatch()
 
     g_deathmatch = *result.get<DeathMatch**>("g_deathmatch");
 }
+
 
 int SetProjectileSpreadRNG(lua_State* L)
 {
@@ -313,6 +315,18 @@ int SetPlayerEntity(lua_State* L)
     return 0;
 }
 
+// EnableGameSimulatePausing(enabled: bool)
+int EnableGameSimulatePausing(lua_State* L)
+{
+    bool enabled = lua_toboolean(L, 1);
+    if (enabled)
+        luaL_error(L, "Reenabling game simulate pausing is not implemented.");
+
+    executable_info noita = ThisExecutableInfo::get();
+    disable_game_pause(noita, get_game_pause_data(noita));
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -320,6 +334,7 @@ static const luaL_Reg nplib[] = {
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
     {"SetActiveHeldEntity", SetActiveHeldEntity},
     {"SetPlayerEntity", SetPlayerEntity},
+    {"EnableGameSimulatePausing", EnableGameSimulatePausing},
     {},
 };
 
@@ -366,7 +381,7 @@ int luaclose_noitapatcher(lua_State* L)
 
 /*
 
-package.cpath = package.cpath .. ";./mods/?.dll"
+package.cpath = package.cpath .. ";./mods/NoitaPatcher/?.dll"
 np = require("noitapatcher")
 function OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, unknown2, unknown3)
     print(tostring(shooter_id))

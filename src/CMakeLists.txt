@@ -4,6 +4,7 @@ add_library(memory_util STATIC
     executable_info.cpp
     memory_pattern.cpp
     x86.cpp
+    game_pause.cpp
 )
 target_link_libraries(memory_util
     PRIVATE

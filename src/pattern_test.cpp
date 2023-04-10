@@ -5,6 +5,7 @@
 #include <cstdio>
 #include "memory_pattern.hpp"
 #include "executable_info.hpp"
+#include "game_pause.hpp"
 
 int main(int argc, char** argv)
 {
@@ -21,18 +22,25 @@ int main(int argc, char** argv)
         return 2;
     }
 
-    auto pat = make_pattern(
-        Bytes{0x33, 0xc0, 0x87, 0x06, 0x89, 0x3d},
-        Capture{"g_deathmatch", 4},
-        Bytes{0x8b, 0xc7, 0x8b, 0x4d, 0xf4, 0x64, 0x89, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x59, 0x5f, 0x5e, 0x8b, 0xe5, 0x5d, 0xc3}
-    );
+    executable_info info = get_executable_info(lib);
+
+    auto pause_data = get_game_pause_data(info);
 
     auto adjust_ptr = [&](auto ptr) {
         return ((unsigned)ptr - (unsigned)lib + 0x400000);
     };
 
-    executable_info info = get_executable_info(lib);
-    auto location = pat.search(info.text_start, info.text_end);
+    std::printf("\n");
+
+    std::printf("  pause start: %#x\n", adjust_ptr(pause_data.do_pause_update_callbacks.start));
+    std::printf("  pause end  : %#x\n", adjust_ptr(pause_data.do_pause_update_callbacks.end));
+    std::printf("  deathmatch start: %#x\n", adjust_ptr(pause_data.deathmatch_update.start));
+    std::printf("  deathmatch end  : %#x\n", adjust_ptr(pause_data.deathmatch_update.end));
+    std::printf("  call pause: %#x\n", adjust_ptr(pause_data.call_pause_addr));
+
+    disable_game_pause(info, pause_data);
+
+    /*auto location = pat.search(info.text_start, info.text_end);
     if (!location) {
         std::cout << "Not found.\n";
     } else {
@@ -47,5 +55,5 @@ int main(int argc, char** argv)
                 capture.name.c_str()
             );
         }
-    }
+    }*/
 }
