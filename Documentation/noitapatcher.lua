@@ -36,4 +36,8 @@ function noitapatcher.EnableGameSimulatePausing(enabled) end
 ---@param enabled boolean Whether to enable or disable Inventory GUI updates.
 function noitapatcher.EnableInventoryGuiUpdate(enabled) end
 
+---Enable/disable ItemPickUpperComponent updates for the entity registerd using RegisterPlayerEntityId
+---@param enabled boolean Whether to enable or disable ItemPickUpper updates.
+function noitapatcher.EnablePlayerItemPickUpper(enabled) end
+
 return noitapatcher

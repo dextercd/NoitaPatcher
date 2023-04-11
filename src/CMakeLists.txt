@@ -4,7 +4,6 @@ add_library(memory_util STATIC
     executable_info.cpp
     memory_pattern.cpp
     x86.cpp
-    game_pause.cpp
 )
 target_link_libraries(memory_util
     PRIVATE
@@ -16,6 +15,7 @@ target_link_libraries(memory_util
 
 add_library(noitapatcher MODULE
     main.cpp
+    game_pause.cpp
 )
 
 target_link_libraries(noitapatcher

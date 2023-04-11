@@ -11,29 +11,57 @@
 #include "memory_pattern.hpp"
 #include "game_pause.hpp"
 #include "executable_info.hpp"
+#include "noita.hpp"
+#include "utils.hpp"
 
+extern int player_entity_id;
+
+bool disable_inventory_gui = false;
+bool disable_player_item_pick_upper = false;
 
 namespace {
-void __stdcall InventoryGuiUpdate_DoNothing(int a, int b) {}
 
-void* inventory_gui_target = nullptr;
+update_component_t update_inventory_gui;
+update_component_t update_pick_upper;
+
+struct GamePauseSystemHooks {
+    void __thiscall InventoryGuiUpdate(Entity* entity, void* component) {
+        if (disable_inventory_gui)
+            return;
+
+        return update_inventory_gui(this, entity, component);
+    }
+
+    void __thiscall ItemPickUpperUpdate(Entity* entity, void* component) {
+        if (disable_player_item_pick_upper && EntityGetId(entity) == player_entity_id)
+            return;
+
+        return update_pick_upper(this, entity, component);
+    }
+};
+
 void make_inventory_gui_updates_hook(const GamePauseData& game_pause)
 {
-    inventory_gui_target = (void*)game_pause.update_inventory_gui.start;
-    MH_CreateHook(inventory_gui_target, (void*)InventoryGuiUpdate_DoNothing, nullptr);
-}
+    auto inventory_gui_target = (void*)game_pause.update_inventory_gui.start;
+    MH_CreateHook(
+        inventory_gui_target,
+        memfn_voidp(&GamePauseSystemHooks::InventoryGuiUpdate),
+        (void**)&update_inventory_gui);
+    MH_EnableHook(inventory_gui_target);
 }
 
-void set_inventory_gui_updates(bool enabled) {
-    if (!inventory_gui_target)
-        return;
-
-    if (enabled) {
-        MH_DisableHook(inventory_gui_target);
-    } else {
-        MH_EnableHook(inventory_gui_target);
-    }
+void make_item_pick_upper_updates_hook(const GamePauseData& game_pause)
+{
+    auto item_pick_upper_target = (void*)game_pause.update_item_pick_upper.start;
+    MH_CreateHook(
+        item_pick_upper_target,
+        memfn_voidp(&GamePauseSystemHooks::ItemPickUpperUpdate),
+        (void**)&update_pick_upper);
+    MH_EnableHook(item_pick_upper_target);
 }
+
+}
+
 
 GamePauseData get_game_pause_data(const executable_info& exe)
 {
@@ -67,11 +95,20 @@ GamePauseData get_game_pause_data(const executable_info& exe)
         }));
     auto inventory_gui_find = inventory_gui_pattern.search(exe, exe.text_start, exe.text_end);
 
+    auto item_pick_upper_pattern = make_pattern(
+        Bytes({
+            0xf3, 0x0f, 0x10, 0x4b, 0x50, 0xf3, 0x0f, 0x10, 0x43, 0x54, 0xf3,
+            0x0f, 0x58, 0xca,
+        }));
+    auto item_pick_upper_find = item_pick_upper_pattern.search(exe, exe.text_start, exe.text_end);
+    std::cout << "item_pick_upper_find: " << item_pick_upper_find.ptr << '\n';
+
     GamePauseData ret{
         .do_pause_update_callbacks = callback_func,
         .call_pause_addr = call_result.ptr,
         .deathmatch_update = deathmatch,
         .update_inventory_gui = find_function_bounds(exe, inventory_gui_find.ptr),
+        .update_item_pick_upper = find_function_bounds(exe, item_pick_upper_find.ptr),
     };
 
     return ret;
@@ -86,6 +123,7 @@ void disable_game_pause(const executable_info& exe, const GamePauseData& game_pa
     game_pause_enabled = false;
 
     make_inventory_gui_updates_hook(game_pause);
+    make_item_pick_upper_updates_hook(game_pause);
 
     auto deathmatch_asm = disassemble(exe, game_pause.deathmatch_update);
     auto pause_start = deathmatch_asm.at_loadaddr(load_address(exe, game_pause.call_pause_addr));

@@ -331,7 +331,15 @@ int EnableGameSimulatePausing(lua_State* L)
 int EnableInventoryGuiUpdate(lua_State* L)
 {
     bool enabled = lua_toboolean(L, 1);
-    set_inventory_gui_updates(enabled);
+    disable_inventory_gui = !enabled;
+    return 0;
+}
+
+// EnablePlayerItemPickUpper(enabled: bool)
+int EnablePlayerItemPickUpper(lua_State* L)
+{
+    bool enabled = lua_toboolean(L, 1);
+    disable_player_item_pick_upper = !enabled;
     return 0;
 }
 
@@ -344,6 +352,7 @@ static const luaL_Reg nplib[] = {
     {"SetPlayerEntity", SetPlayerEntity},
     {"EnableGameSimulatePausing", EnableGameSimulatePausing},
     {"EnableInventoryGuiUpdate", EnableInventoryGuiUpdate},
+    {"EnablePlayerItemPickUpper", EnablePlayerItemPickUpper},
     {},
 };
 

@@ -5,7 +5,6 @@
 #include <cstdio>
 #include "memory_pattern.hpp"
 #include "executable_info.hpp"
-#include "game_pause.hpp"
 
 int main(int argc, char** argv)
 {
@@ -24,21 +23,9 @@ int main(int argc, char** argv)
 
     executable_info info = get_executable_info(lib);
 
-    auto pause_data = get_game_pause_data(info);
-
     auto adjust_ptr = [&](auto ptr) {
         return ((unsigned)ptr - (unsigned)lib + 0x400000);
     };
-
-    std::printf("\n");
-
-    std::printf("  pause start: %#x\n", adjust_ptr(pause_data.do_pause_update_callbacks.start));
-    std::printf("  pause end  : %#x\n", adjust_ptr(pause_data.do_pause_update_callbacks.end));
-    std::printf("  deathmatch start: %#x\n", adjust_ptr(pause_data.deathmatch_update.start));
-    std::printf("  deathmatch end  : %#x\n", adjust_ptr(pause_data.deathmatch_update.end));
-    std::printf("  call pause: %#x\n", adjust_ptr(pause_data.call_pause_addr));
-
-    disable_game_pause(info, pause_data);
 
     /*auto location = pat.search(info.text_start, info.text_end);
     if (!location) {

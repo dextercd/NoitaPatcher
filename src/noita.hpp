@@ -51,6 +51,7 @@ struct DeathMatch {
     char dont_know2[100];
 };
 
+static_assert(sizeof(void*) == 4);
 static_assert(sizeof(DeathMatch) == 200);
 
 // Note: It's really a mix between __fastcall (uses registers) and
@@ -85,6 +86,9 @@ using set_active_held_entity_t =
 
 using call_scripts_on_pause_pre_update_t =
     void (__stdcall*)();
+
+using update_component_t =
+    void (__thiscall*)(void* sys, Entity* entity, void* component);
 
 inline int EntityGetId(Entity* entity)
 {
