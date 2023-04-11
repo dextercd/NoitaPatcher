@@ -327,6 +327,14 @@ int EnableGameSimulatePausing(lua_State* L)
     return 0;
 }
 
+// EnableInventoryGuiUpdate(enabled: bool)
+int EnableInventoryGuiUpdate(lua_State* L)
+{
+    bool enabled = lua_toboolean(L, 1);
+    set_inventory_gui_updates(enabled);
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -335,6 +343,7 @@ static const luaL_Reg nplib[] = {
     {"SetActiveHeldEntity", SetActiveHeldEntity},
     {"SetPlayerEntity", SetPlayerEntity},
     {"EnableGameSimulatePausing", EnableGameSimulatePausing},
+    {"EnableInventoryGuiUpdate", EnableInventoryGuiUpdate},
     {},
 };
 

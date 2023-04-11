@@ -32,4 +32,8 @@ function noitapatcher.SetPlayerEntity(entity_id) end
 ---@param enabled boolean Whether to enable or disable pausing.
 function noitapatcher.EnableGameSimulatePausing(enabled) end
 
+---Disable InventoryGuiComponent updates without disabling the component.
+---@param enabled boolean Whether to enable or disable Inventory GUI updates.
+function noitapatcher.EnableInventoryGuiUpdate(enabled) end
+
 return noitapatcher

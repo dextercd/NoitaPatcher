@@ -12,6 +12,29 @@
 #include "game_pause.hpp"
 #include "executable_info.hpp"
 
+
+namespace {
+void __stdcall InventoryGuiUpdate_DoNothing(int a, int b) {}
+
+void* inventory_gui_target = nullptr;
+void make_inventory_gui_updates_hook(const GamePauseData& game_pause)
+{
+    inventory_gui_target = (void*)game_pause.update_inventory_gui.start;
+    MH_CreateHook(inventory_gui_target, (void*)InventoryGuiUpdate_DoNothing, nullptr);
+}
+}
+
+void set_inventory_gui_updates(bool enabled) {
+    if (!inventory_gui_target)
+        return;
+
+    if (enabled) {
+        MH_DisableHook(inventory_gui_target);
+    } else {
+        MH_EnableHook(inventory_gui_target);
+    }
+}
+
 GamePauseData get_game_pause_data(const executable_info& exe)
 {
     auto callback_str = load_address(exe,
@@ -36,10 +59,19 @@ GamePauseData get_game_pause_data(const executable_info& exe)
     auto call_result = call_on_pause_pattern.search(exe, exe.text_start, exe.text_end);
     auto deathmatch = find_function_bounds(exe, call_result.ptr);
 
+    auto inventory_gui_pattern = make_pattern(
+        Bytes({
+            0xc7, 0x44, 0x24, 0x08, 0x00, 0x00, 0x80, 0x3f, 0xc7, 0x44, 0x24,
+            0x04, 0x00, 0x00, 0x7a, 0x44, 0xc7, 0x04, 0x24, 0x00, 0x00, 0x80,
+            0x3f,
+        }));
+    auto inventory_gui_find = inventory_gui_pattern.search(exe, exe.text_start, exe.text_end);
+
     GamePauseData ret{
         .do_pause_update_callbacks = callback_func,
         .call_pause_addr = call_result.ptr,
         .deathmatch_update = deathmatch,
+        .update_inventory_gui = find_function_bounds(exe, inventory_gui_find.ptr),
     };
 
     return ret;
@@ -52,6 +84,8 @@ void disable_game_pause(const executable_info& exe, const GamePauseData& game_pa
         return;
 
     game_pause_enabled = false;
+
+    make_inventory_gui_updates_hook(game_pause);
 
     auto deathmatch_asm = disassemble(exe, game_pause.deathmatch_update);
     auto pause_start = deathmatch_asm.at_loadaddr(load_address(exe, game_pause.call_pause_addr));
