@@ -383,11 +383,8 @@ int luaclose_noitapatcher(lua_State* L)
 
 package.cpath = package.cpath .. ";./mods/NoitaPatcher/?.dll"
 np = require("noitapatcher")
-function OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, unknown2, unknown3)
-    print(tostring(shooter_id))
-    print(tostring(rng))
-    np.SetProjectileSpreadRNG(0)
-end
+function OnProjectileFired() end
 OnProjectileFiredPost = OnProjectileFired
+np.EnableGameSimulatePausing(false)
 
 */

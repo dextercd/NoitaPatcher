@@ -12,19 +12,6 @@
 #include "game_pause.hpp"
 #include "executable_info.hpp"
 
-namespace {
-
-void __stdcall DoNothing() {}
-
-void disable_on_pause_callback(const GamePauseData& game_pause)
-{
-    auto target = (void*)game_pause.do_pause_update_callbacks.start;
-    MH_CreateHook(target, (void*)DoNothing, nullptr);
-    MH_EnableHook(target);
-}
-
-}
-
 GamePauseData get_game_pause_data(const executable_info& exe)
 {
     auto callback_str = load_address(exe,
@@ -65,8 +52,6 @@ void disable_game_pause(const executable_info& exe, const GamePauseData& game_pa
         return;
 
     game_pause_enabled = false;
-
-    disable_on_pause_callback(game_pause);
 
     auto deathmatch_asm = disassemble(exe, game_pause.deathmatch_update);
     auto pause_start = deathmatch_asm.at_loadaddr(load_address(exe, game_pause.call_pause_addr));
