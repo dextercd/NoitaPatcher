@@ -33,10 +33,14 @@ function noitapatcher.SetPlayerEntity(entity_id) end
 function noitapatcher.EnableGameSimulatePausing(enabled) end
 
 ---Disable InventoryGuiComponent updates without disabling the component.
+---Disabling updates for this component makes clicking on an empty wand slot work
+---after using EnableGameSimulatePausing(false) and entering the wand pickup menu.
 ---@param enabled boolean Whether to enable or disable Inventory GUI updates.
 function noitapatcher.EnableInventoryGuiUpdate(enabled) end
 
 ---Enable/disable ItemPickUpperComponent updates for the entity registerd using RegisterPlayerEntityId
+---Disabling updates for this component prevents double wand cards from appearing
+---after using EnableGameSimulatePausing(false) and entering the wand pickup menu.
 ---@param enabled boolean Whether to enable or disable ItemPickUpper updates.
 function noitapatcher.EnablePlayerItemPickUpper(enabled) end
 
