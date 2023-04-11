@@ -104,9 +104,24 @@ A bunch more stuff is probably tied to this.</p>
 <dt class="sig sig-object lua" id="noitapatcher.EnableInventoryGuiUpdate">
 <em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">EnableInventoryGuiUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">enabled</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.EnableInventoryGuiUpdate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disable InventoryGuiComponent updates without disabling the component.</p>
+<p>Disabling updates for this component makes clicking on an empty wand slot work
+after using EnableGameSimulatePausing(false) and entering the wand pickup menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>enabled</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – Whether to enable or disable Inventory GUI updates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua function">
+<dt class="sig sig-object lua" id="noitapatcher.EnablePlayerItemPickUpper">
+<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">EnablePlayerItemPickUpper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">enabled</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.EnablePlayerItemPickUpper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable/disable ItemPickUpperComponent updates for the entity registerd using RegisterPlayerEntityId</p>
+<p>Disabling updates for this component prevents double wand cards from appearing
+after using EnableGameSimulatePausing(false) and entering the wand pickup menu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>enabled</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – Whether to enable or disable ItemPickUpper updates.</p>
 </dd>
 </dl>
 </dd></dl>
