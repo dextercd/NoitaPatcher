@@ -195,7 +195,6 @@ void install_hooks()
     MH_Initialize();
 
     fire_wand_info = find_fire_wand();
-    std::cout << "fire wand: " << (void*)fire_wand_info.func << '\n';
     MH_CreateHook(
         (void*)fire_wand_info.func,
         (void*)fire_wand_hook,
@@ -303,6 +302,11 @@ int SetActiveHeldEntity(lua_State* L)
         luaL_error(L, "Entity %d not found.", entity_id);
 
     set_active_held_entity(entity, item, unknown, make_noise);
+    #ifdef __GNUC__
+    asm("add $0x8, %esp");
+    #else
+    __asm { add esp, 0x8 }
+    #endif
     return 0;
 }
 
