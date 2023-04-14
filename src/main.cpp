@@ -31,6 +31,7 @@ int player_entity_id = -1;
 EntityManager* entity_manager;
 entity_get_by_id_t entity_get_by_id;
 set_active_held_entity_t set_active_held_entity;
+send_message_use_item_t use_item;
 
 DeathMatch* g_deathmatch;
 
@@ -274,6 +275,25 @@ void find_deathmatch()
     g_deathmatch = *result.get<DeathMatch**>("g_deathmatch");
 }
 
+void find_use_item()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto pat = make_pattern(
+        Bytes{0x89, 0x44, 0x24, 0x44, 0x8b, 0x44, 0x24, 0x18, 0x89, 0x44, 0x24, 0x48, 0xe8},
+        Pad{4},
+        Bytes{0x8d, 0x44, 0x24, 0x24, 0x50},
+        Pad{1},
+        Bytes{0xe8}, Capture{"UseItem", 4}
+    );
+    auto result = pat.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find UseItem\n";
+        return;
+    }
+
+    use_item = (send_message_use_item_t)result.get_rela_call("UseItem");
+}
+
 
 int SetProjectileSpreadRNG(lua_State* L)
 {
@@ -347,27 +367,16 @@ int EnablePlayerItemPickUpper(lua_State* L)
     return 0;
 }
 
-struct Message_UseItem {
-    void* vtable;
-    int unknown;
-    int strings[3];
-    bool mIgnoreReload;
-    bool mCharge;
-    bool mStartedUsingThisFrame;
-    vec2 mPos;
-    vec2 mTarget;
-};
-
 int UseItem(lua_State* L)
 {
     int entity_id = luaL_checkinteger(L, 1);
     bool ignore_reload = lua_toboolean(L, 2);
     bool charge = lua_toboolean(L, 3);
     bool started_using_this_frame = lua_toboolean(L, 4);
-    float pos_x = lua_tonumber(L, 5);
-    float pos_y = lua_tonumber(L, 6);
-    float target_x = lua_tonumber(L, 7);
-    float target_y = lua_tonumber(L, 8);
+    float pos_x = luaL_checknumber(L, 5);
+    float pos_y = luaL_checknumber(L, 6);
+    float target_x = luaL_checknumber(L, 7);
+    float target_y = luaL_checknumber(L, 8);
 
     auto entity = entity_get_by_id(entity_manager, entity_id);
     auto message = Message_UseItem{};
@@ -379,8 +388,7 @@ int UseItem(lua_State* L)
     message.mTarget.x = target_x;
     message.mTarget.y = target_y;
 
-    auto f = (void(*)(Entity*, Message_UseItem*))0x00b82620;
-    f(entity, &message);
+    use_item(entity, &message);
 
     return 0;
 }
@@ -407,6 +415,7 @@ int luaopen_noitapatcher(lua_State* L)
     std::cout << "luaopen_noitapatcher" << L << '\n';
     find_entity_funcs();
     find_deathmatch();
+    find_use_item();
 
     current_lua_state = L;
     luaL_register(L, "noitapatcher", nplib);

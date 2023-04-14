@@ -100,4 +100,17 @@ inline int EntityGetId(Entity* entity)
     return ((NormalEntity*)entity)->EntityId;
 }
 
+struct Message_UseItem {
+    void* vtable;
+    int unknown;
+    int strings[3];
+    bool mIgnoreReload;
+    bool mCharge;
+    bool mStartedUsingThisFrame;
+    vec2 mPos;
+    vec2 mTarget;
+};
+
+using send_message_use_item_t = void(__stdcall*)(Entity*, Message_UseItem*);
+
 #endif // Header guard
