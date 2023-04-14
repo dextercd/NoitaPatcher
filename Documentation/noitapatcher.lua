@@ -44,4 +44,15 @@ function noitapatcher.EnableInventoryGuiUpdate(enabled) end
 ---@param enabled boolean Whether to enable or disable ItemPickUpper updates.
 function noitapatcher.EnablePlayerItemPickUpper(enabled) end
 
+---Send a 'use item' message causing the item to get activated by the entity's ability component.
+---@param entity_id Wand or other item entity.
+---@param ignore_reload _
+---@param charge _
+---@param started_using_this_frame _
+---@param pos_x _
+---@param pos_y _
+---@param target_x _
+---@param target_y _
+function noitapatcher.UseItem(entity_id, ignore_reload, charge, started_using_this_frame, pos_x, pos_y, target_x, target_y) end
+
 return noitapatcher
