@@ -347,6 +347,44 @@ int EnablePlayerItemPickUpper(lua_State* L)
     return 0;
 }
 
+struct Message_UseItem {
+    void* vtable;
+    int unknown;
+    int strings[3];
+    bool mIgnoreReload;
+    bool mCharge;
+    bool mStartedUsingThisFrame;
+    vec2 mPos;
+    vec2 mTarget;
+};
+
+int UseItem(lua_State* L)
+{
+    int entity_id = luaL_checkinteger(L, 1);
+    bool ignore_reload = lua_toboolean(L, 2);
+    bool charge = lua_toboolean(L, 3);
+    bool started_using_this_frame = lua_toboolean(L, 4);
+    float pos_x = lua_tonumber(L, 5);
+    float pos_y = lua_tonumber(L, 6);
+    float target_x = lua_tonumber(L, 7);
+    float target_y = lua_tonumber(L, 8);
+
+    auto entity = entity_get_by_id(entity_manager, entity_id);
+    auto message = Message_UseItem{};
+    message.mIgnoreReload = ignore_reload;
+    message.mCharge = charge;
+    message.mStartedUsingThisFrame = started_using_this_frame;
+    message.mPos.x = pos_x;
+    message.mPos.y = pos_y;
+    message.mTarget.x = target_x;
+    message.mTarget.y = target_y;
+
+    auto f = (void(*)(Entity*, Message_UseItem*))0x00b82620;
+    f(entity, &message);
+
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -357,6 +395,7 @@ static const luaL_Reg nplib[] = {
     {"EnableGameSimulatePausing", EnableGameSimulatePausing},
     {"EnableInventoryGuiUpdate", EnableInventoryGuiUpdate},
     {"EnablePlayerItemPickUpper", EnablePlayerItemPickUpper},
+    {"UseItem", UseItem},
     {},
 };
 
