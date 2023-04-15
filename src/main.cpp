@@ -27,6 +27,7 @@ fire_wand_function_t original_fire_wand_function;
 platform_shooter_damage_message_handler_t original_ps_damage_message_handler;
 lua_State* current_lua_state;
 int player_entity_id = -1;
+int inject_updated_entity_id = -1;
 
 EntityManager* entity_manager;
 entity_get_by_id_t entity_get_by_id;
@@ -294,6 +295,27 @@ void find_use_item()
     use_item = (send_message_use_item_t)result.get_rela_call("UseItem");
 }
 
+lua_CFunction GetUpdatedEntityID_original;
+
+int GetUpdatedEntityID_hook(lua_State* L)
+{
+    if (inject_updated_entity_id == -1)
+        return GetUpdatedEntityID_original(L);
+
+    lua_pushinteger(L, inject_updated_entity_id);
+    return 1;
+}
+
+void install_hook_GetUpdatedEntityID(lua_State* L)
+{
+    lua_getglobal(L, "GetUpdatedEntityID");
+    auto f = lua_tocfunction (L, -1);
+    lua_pop(L, 1);
+
+    MH_CreateHook((void*)f, (void*)GetUpdatedEntityID_hook, (void**)&GetUpdatedEntityID_original);
+    MH_EnableHook((void*)f);
+}
+
 
 int SetProjectileSpreadRNG(lua_State* L)
 {
@@ -369,16 +391,17 @@ int EnablePlayerItemPickUpper(lua_State* L)
 
 int UseItem(lua_State* L)
 {
-    int entity_id = luaL_checkinteger(L, 1);
-    bool ignore_reload = lua_toboolean(L, 2);
-    bool charge = lua_toboolean(L, 3);
-    bool started_using_this_frame = lua_toboolean(L, 4);
-    float pos_x = luaL_checknumber(L, 5);
-    float pos_y = luaL_checknumber(L, 6);
-    float target_x = luaL_checknumber(L, 7);
-    float target_y = luaL_checknumber(L, 8);
+    int responsible_entity_id = luaL_checkinteger(L, 1);
+    int item_entity_id = luaL_checkinteger(L, 2);
+    bool ignore_reload = lua_toboolean(L, 3);
+    bool charge = lua_toboolean(L, 4);
+    bool started_using_this_frame = lua_toboolean(L, 5);
+    float pos_x = luaL_checknumber(L, 6);
+    float pos_y = luaL_checknumber(L, 7);
+    float target_x = luaL_checknumber(L, 8);
+    float target_y = luaL_checknumber(L, 9);
 
-    auto entity = entity_get_by_id(entity_manager, entity_id);
+    auto item_entity = entity_get_by_id(entity_manager, item_entity_id);
     auto message = Message_UseItem{};
     message.mIgnoreReload = ignore_reload;
     message.mCharge = charge;
@@ -388,7 +411,9 @@ int UseItem(lua_State* L)
     message.mTarget.x = target_x;
     message.mTarget.y = target_y;
 
-    use_item(entity, &message);
+    inject_updated_entity_id = responsible_entity_id;
+    use_item(item_entity, &message);
+    inject_updated_entity_id = -1;
 
     return 0;
 }
@@ -430,6 +455,7 @@ int luaopen_noitapatcher(lua_State* L)
 
     if (!np_initialised) {
         install_hooks();
+        install_hook_GetUpdatedEntityID(L);
         np_initialised = true;
     }
 
