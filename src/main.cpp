@@ -437,10 +437,7 @@ bool np_initialised = false;
 extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
 {
-    std::cout << "luaopen_noitapatcher" << L << '\n';
-    find_entity_funcs();
-    find_deathmatch();
-    find_use_item();
+    std::cout << "luaopen_noitapatcher " << L << '\n';
 
     current_lua_state = L;
     luaL_register(L, "noitapatcher", nplib);
@@ -454,8 +451,13 @@ int luaopen_noitapatcher(lua_State* L)
     lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
 
     if (!np_initialised) {
+        find_entity_funcs();
+        find_deathmatch();
+        find_use_item();
+
         install_hooks();
         install_hook_GetUpdatedEntityID(L);
+
         np_initialised = true;
     }
 
@@ -475,12 +477,32 @@ int luaclose_noitapatcher(lua_State* L)
     return 0;
 }
 
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+    switch(fdwReason) {
+        case DLL_PROCESS_ATTACH:
+            DisableThreadLibraryCalls(hinstDLL);
+
+            // Can't really deal with being unloaded at the moment... Increase
+            // the usage count to prevent it from happening.
+            char filename[MAX_PATH];
+            GetModuleFileNameA(hinstDLL, filename, sizeof(filename));
+            LoadLibrary(filename);
+            break;
+
+        case DLL_PROCESS_DETACH:
+            MH_Uninitialize();
+            break;
+    }
+
+    return TRUE;  // Successful DLL_PROCESS_ATTACH.
+}
+
 /*
 
 package.cpath = package.cpath .. ";./mods/NoitaPatcher/?.dll"
 np = require("noitapatcher")
 function OnProjectileFired() end
 OnProjectileFiredPost = OnProjectileFired
-np.EnableGameSimulatePausing(false)
 
 */
