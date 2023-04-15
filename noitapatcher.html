@@ -128,19 +128,27 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 
 <dl class="lua function">
 <dt class="sig sig-object lua" id="noitapatcher.UseItem">
-<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">UseItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entity_id</span></em>, <em class="sig-param"><span class="pre">ignore_reload</span></em>, <em class="sig-param"><span class="pre">charge</span></em>, <em class="sig-param"><span class="pre">started_using_this_frame</span></em>, <em class="sig-param"><span class="pre">pos_x</span></em>, <em class="sig-param"><span class="pre">pos_y</span></em>, <em class="sig-param"><span class="pre">target_x</span></em>, <em class="sig-param"><span class="pre">target_y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.UseItem" title="Permalink to this definition">¶</a></dt>
+<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">UseItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">responsible_entity_id</span></em>, <em class="sig-param"><span class="pre">item_entity_id</span></em>, <em class="sig-param"><span class="pre">ignore_reload</span></em>, <em class="sig-param"><span class="pre">charge</span></em>, <em class="sig-param"><span class="pre">started_using_this_frame</span></em>, <em class="sig-param"><span class="pre">pos_x</span></em>, <em class="sig-param"><span class="pre">pos_y</span></em>, <em class="sig-param"><span class="pre">target_x</span></em>, <em class="sig-param"><span class="pre">target_y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.UseItem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a ‘use item’ message causing the item to get activated by the entity’s ability component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Wand</span></code></span>) – or other item entity.</p></li>
-<li><p><strong>ignore_reload</strong> – </p></li>
-<li><p><strong>charge</strong> – </p></li>
-<li><p><strong>started_using_this_frame</strong> – </p></li>
-<li><p><strong>pos_x</strong> – </p></li>
-<li><p><strong>pos_y</strong> – </p></li>
-<li><p><strong>target_x</strong> – </p></li>
-<li><p><strong>target_y</strong> – </p></li>
+<li><p><strong>responsible_entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – Entity that should be seen as responsible for the item’s use.</p></li>
+<li><p><strong>item_entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – Wand or other item entity.</p></li>
+<li><p><strong>ignore_reload</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>charge</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>started_using_this_frame</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>pos_x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>pos_y</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>target_x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – <p>_</p>
+</p></li>
+<li><p><strong>target_y</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – <p>_</p>
+</p></li>
 </ul>
 </dd>
 </dl>
