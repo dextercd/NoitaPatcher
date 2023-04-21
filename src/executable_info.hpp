@@ -23,7 +23,7 @@ class ThisExecutableInfo {
     ThisExecutableInfo();
 
 public:
-    static executable_info get()
+    static const executable_info& get()
     {
         static ThisExecutableInfo instance;
         return instance.info;

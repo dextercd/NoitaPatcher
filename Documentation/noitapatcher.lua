@@ -56,4 +56,9 @@ function noitapatcher.EnablePlayerItemPickUpper(enabled) end
 ---@param target_y number _
 function noitapatcher.UseItem(responsible_entity_id, item_entity_id, ignore_reload, charge, started_using_this_frame, pos_x, pos_y, target_x, target_y) end
 
+---Patch out logging for a certain string literal.
+---@param logstr string The string to look for in the exe, it should end with a newline character in most cases.
+---@return bool patch_successful
+function noitapatcher.SilenceLogs(logstr) end
+
 return noitapatcher

@@ -418,6 +418,60 @@ int UseItem(lua_State* L)
     return 0;
 }
 
+int SilenceLogs(lua_State* L)
+{
+    auto& noita = ThisExecutableInfo::get();
+
+    auto logstr = luaL_checkstring(L, 1);
+    auto str_location = find_rdata_string(noita, logstr);
+    if (!str_location) {
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    auto pattern = make_pattern(
+        Bytes{0x68}, Raw{str_location},
+        Bytes{0xb9}, Pad{4},
+        Bytes{0xe8}, Pad{4}
+    );
+
+    auto result = pattern.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    std::uint8_t patch[15] = {
+        0x0F, 0x1F, 0x80, 0x00, 0x00, 0x00, 0x00,       // nop 7
+        0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, // nop 8
+    };
+
+    auto location = (void*)result.ptr;
+    DWORD prot_restore;
+    auto prot_result = VirtualProtect(
+        location,
+        sizeof(patch),
+        PAGE_READWRITE,
+        &prot_restore
+    );
+
+    if (!prot_result) {
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    std::memcpy(location, patch, sizeof(patch));
+    VirtualProtect(
+        location,
+        sizeof(patch),
+        prot_restore,
+        &prot_restore
+    );
+
+    lua_pushboolean(L, true);
+    return 1;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -429,6 +483,7 @@ static const luaL_Reg nplib[] = {
     {"EnableInventoryGuiUpdate", EnableInventoryGuiUpdate},
     {"EnablePlayerItemPickUpper", EnablePlayerItemPickUpper},
     {"UseItem", UseItem},
+    {"SilenceLogs", SilenceLogs},
     {},
 };
 
