@@ -61,4 +61,16 @@ function noitapatcher.UseItem(responsible_entity_id, item_entity_id, ignore_relo
 ---@return bool patch_successful
 function noitapatcher.SilenceLogs(logstr) end
 
+---Like Noita's LoadPixelScene, but doesn't care if the scene has been loaded before.
+---@param materials_filename string
+---@param colors_filename string
+---@param x number
+---@param y number
+---@param background_file string
+---@param skip_biome_checks bool Defaults to false
+---@param skip_edge_textures bool Defaults to false
+---@param color_to_material_table table Defaults to {}
+---@param background_z_index int Defaults to 50 
+function noitapatcher.ForceLoadPixelScene(materials_filename, colors_filename, x, y, background_file, skip_biome_checks, skip_edge_textures, color_to_material_table, background_z_index) end
+
 return noitapatcher

@@ -34,6 +34,8 @@ entity_get_by_id_t entity_get_by_id;
 set_active_held_entity_t set_active_held_entity;
 send_message_use_item_t use_item;
 
+void* duplicate_pixel_scene_check = nullptr;
+
 DeathMatch* g_deathmatch;
 
 FireWandInfo find_fire_wand()
@@ -295,6 +297,33 @@ void find_use_item()
     use_item = (send_message_use_item_t)result.get_rela_call("UseItem");
 }
 
+void find_duplicate_pixel_scene_check()
+{
+    auto& noita = ThisExecutableInfo::get();
+    auto pattern = make_pattern(
+        Bytes{0x8d, 0x56, 0x5c, 0x8d, 0x4b, 0x5c, 0xe8},
+        Pad{4},
+        Bytes{0x84, 0xc0, 0x0f, 0x85},
+        Pad{4}
+    );
+
+    auto result = pattern.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find duplicate pixel scene check.\n";
+        return;
+    }
+
+    duplicate_pixel_scene_check = (char*)result.ptr + 11;
+}
+
+lua_CFunction GetGlobalFunction(lua_State* L, const char* func_name)
+{
+    lua_getglobal(L, func_name);
+    auto f = lua_tocfunction (L, -1);
+    lua_pop(L, 1);
+    return f;
+}
+
 lua_CFunction GetUpdatedEntityID_original;
 
 int GetUpdatedEntityID_hook(lua_State* L)
@@ -472,6 +501,33 @@ int SilenceLogs(lua_State* L)
     return 1;
 }
 
+int ForceLoadPixelScene(lua_State* L)
+{
+    auto lua_load_pixel_scene = GetGlobalFunction(L, "LoadPixelScene");
+    if (!duplicate_pixel_scene_check)
+        return lua_load_pixel_scene(L);
+
+    std::uint8_t patch[2] = {0x31, 0xc0};
+
+    std::uint8_t original[std::size(patch)];
+    std::memcpy(original, duplicate_pixel_scene_check, sizeof(original));
+
+    DWORD prot_restore;
+    DWORD discard;
+
+    VirtualProtect(duplicate_pixel_scene_check, sizeof(patch), PAGE_READWRITE, &prot_restore);
+    std::memcpy(duplicate_pixel_scene_check, patch, sizeof(patch));
+    VirtualProtect(duplicate_pixel_scene_check, sizeof(patch), prot_restore, &discard);
+
+    auto ret = lua_load_pixel_scene(L);
+
+    VirtualProtect(duplicate_pixel_scene_check, sizeof(original), PAGE_READWRITE, &prot_restore);
+    std::memcpy(duplicate_pixel_scene_check, original, sizeof(original));
+    VirtualProtect(duplicate_pixel_scene_check, sizeof(original), prot_restore, &discard);
+
+    return ret;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -484,6 +540,7 @@ static const luaL_Reg nplib[] = {
     {"EnablePlayerItemPickUpper", EnablePlayerItemPickUpper},
     {"UseItem", UseItem},
     {"SilenceLogs", SilenceLogs},
+    {"ForceLoadPixelScene", ForceLoadPixelScene},
     {},
 };
 
@@ -509,6 +566,7 @@ int luaopen_noitapatcher(lua_State* L)
         find_entity_funcs();
         find_deathmatch();
         find_use_item();
+        find_duplicate_pixel_scene_check();
 
         install_hooks();
         install_hook_GetUpdatedEntityID(L);
