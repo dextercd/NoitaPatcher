@@ -533,6 +533,12 @@ int EnableExtendedLogging(lua_State* L)
     return 0;
 }
 
+int EnableLogFiltering(lua_State* L)
+{
+    np::do_log_filtering = lua_toboolean(L, 1);
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -547,6 +553,7 @@ static const luaL_Reg nplib[] = {
     {"SilenceLogs", SilenceLogs},
     {"ForceLoadPixelScene", ForceLoadPixelScene},
     {"EnableExtendedLogging", EnableExtendedLogging},
+    {"EnableLogFiltering", EnableLogFiltering},
     {},
 };
 
@@ -593,6 +600,7 @@ int luaclose_noitapatcher(lua_State* L)
 
     // The Lua state is about to go away, stop using it
     current_lua_state = nullptr;
+    np::do_log_filtering = false;
 
     return 0;
 }

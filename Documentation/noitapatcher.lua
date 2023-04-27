@@ -77,4 +77,8 @@ function noitapatcher.ForceLoadPixelScene(materials_filename, colors_filename, x
 ---@param enable boolean enable or disable
 function noitapatcher.EnableExtendedLogging(enable) end
 
+---Enable the FilterLog callback
+---@param enable boolean enable or disable
+function noitapatcher.EnableLogFiltering(enable) end
+
 return noitapatcher

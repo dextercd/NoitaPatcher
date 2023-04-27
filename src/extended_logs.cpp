@@ -8,10 +8,27 @@ extern "C" {
 #include <MinHook.h>
 #include <string>
 
+extern lua_State* current_lua_state;
+
 namespace {
 
 lua_CFunction print_func;
 lua_CFunction original_print_func;
+
+bool filter_log(const char* source)
+{
+    lua_getglobal(current_lua_state, "FilterLog");
+    lua_pushstring(current_lua_state, source);
+    if (lua_pcall(current_lua_state, 1, 1, 0)) {
+        lua_pop(current_lua_state, 1);
+        return true;
+    }
+
+    auto ret = lua_toboolean(current_lua_state, -1);
+    lua_pop(current_lua_state, 1);
+
+    return ret;
+}
 
 int print_hook(lua_State* L)
 {
@@ -21,9 +38,11 @@ int print_hook(lua_State* L)
     lua_getstack(L, 1, &debug);
     lua_getinfo(L, "Sl", &debug);
 
-    std::string source_info = debug.source;
-    source_info += ":";
-    source_info += std::to_string(debug.currentline);
+    if (np::do_log_filtering && !filter_log(debug.source))
+        return 0;
+
+    std::string source_info =
+        std::string{"["} + debug.source + ":" + std::to_string(debug.currentline) + "]";
 
     lua_pushstring(L, source_info.c_str());
 
@@ -36,6 +55,8 @@ int print_hook(lua_State* L)
 }
 
 namespace np {
+
+bool do_log_filtering = false;
 
 void install_extended_logs_hook(lua_State* L)
 {
@@ -65,6 +86,5 @@ void disable_extended_logging_hook()
 
     MH_DisableHook((void*)print_func);
 }
-
 
 }

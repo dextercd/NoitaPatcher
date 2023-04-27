@@ -60,3 +60,16 @@ This may change in future versions.
 
    This callback is mostly useful for when you want to extract the exact projectile
    parameters that were generated from the RNG. (e.g. velocity/direction.)
+
+
+.. lua:function:: FilterLog(source)
+
+   Decide whether the log should be performed or not. Only called once enabled
+   by calling :lua:func:`noitapatcher.EnableLogFiltering`.
+
+   :param source: Where does the log entry come from? Special value "=[C]" means
+      there's no known source file.
+   :type source: boolean
+
+   :return: Whether to perform the logging (true) or not (false).
+   :rtype: boolean
