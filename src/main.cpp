@@ -18,6 +18,7 @@ extern "C" {
 #include "x86.hpp"
 #include "memory_pattern.hpp"
 #include "game_pause.hpp"
+#include "extended_logs.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -521,6 +522,17 @@ int ForceLoadPixelScene(lua_State* L)
     return ret;
 }
 
+int EnableExtendedLogging(lua_State* L)
+{
+    if (lua_toboolean(L, 1)) {
+        np::enable_extended_logging_hook();
+    } else {
+        np::disable_extended_logging_hook();
+    }
+
+    return 0;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -534,6 +546,7 @@ static const luaL_Reg nplib[] = {
     {"UseItem", UseItem},
     {"SilenceLogs", SilenceLogs},
     {"ForceLoadPixelScene", ForceLoadPixelScene},
+    {"EnableExtendedLogging", EnableExtendedLogging},
     {},
 };
 
@@ -563,6 +576,7 @@ int luaopen_noitapatcher(lua_State* L)
 
         install_hooks();
         install_hook_GetUpdatedEntityID(L);
+        np::install_extended_logs_hook(L);
 
         np_initialised = true;
     }

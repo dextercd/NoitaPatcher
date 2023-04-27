@@ -73,4 +73,8 @@ function noitapatcher.SilenceLogs(logstr) end
 ---@param background_z_index int Defaults to 50 
 function noitapatcher.ForceLoadPixelScene(materials_filename, colors_filename, x, y, background_file, skip_biome_checks, skip_edge_textures, color_to_material_table, background_z_index) end
 
+---Enable source location logging
+---@param enable boolean enable or disable
+function noitapatcher.EnableExtendedLogging(enable) end
+
 return noitapatcher
