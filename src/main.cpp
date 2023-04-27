@@ -12,6 +12,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "lua_util.hpp"
 #include "executable_info.hpp"
 #include "noita.hpp"
 #include "x86.hpp"
@@ -316,14 +317,6 @@ void find_duplicate_pixel_scene_check()
     duplicate_pixel_scene_check = (char*)result.ptr + 11;
 }
 
-lua_CFunction GetGlobalFunction(lua_State* L, const char* func_name)
-{
-    lua_getglobal(L, func_name);
-    auto f = lua_tocfunction (L, -1);
-    lua_pop(L, 1);
-    return f;
-}
-
 lua_CFunction GetUpdatedEntityID_original;
 
 int GetUpdatedEntityID_hook(lua_State* L)
@@ -503,7 +496,7 @@ int SilenceLogs(lua_State* L)
 
 int ForceLoadPixelScene(lua_State* L)
 {
-    auto lua_load_pixel_scene = GetGlobalFunction(L, "LoadPixelScene");
+    auto lua_load_pixel_scene = get_lua_c_binding(L, "LoadPixelScene");
     if (!duplicate_pixel_scene_check)
         return lua_load_pixel_scene(L);
 

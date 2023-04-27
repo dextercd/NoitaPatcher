@@ -16,6 +16,7 @@ target_link_libraries(memory_util
 add_library(noitapatcher MODULE
     main.cpp
     game_pause.cpp
+    lua_util.cpp
 )
 
 target_link_libraries(noitapatcher
