@@ -78,13 +78,16 @@ parameters that were generated from the RNG. (e.g. velocity/direction.)</p>
 
 <dl class="lua function">
 <dt class="sig sig-object lua" id="FilterLog">
-<em class="property"> </em><span class="sig-name descname"><span class="pre">FilterLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">source</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FilterLog" title="Permalink to this definition">¶</a></dt>
+<em class="property"> </em><span class="sig-name descname"><span class="pre">FilterLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">source</span></em>, <em class="sig-param"><span class="pre">linenumber</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FilterLog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decide whether the log should be performed or not. Only called once enabled
 by calling <a class="reference internal" href="noitapatcher.html#noitapatcher.EnableLogFiltering" title="noitapatcher.EnableLogFiltering"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">noitapatcher.EnableLogFiltering()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>source</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – Where does the log entry come from? Special value “=[C]” means
-there’s no known source file.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">string</span></code></span>) – Where does the log entry come from? Special value “=[C]” means
+there’s no known source file.</p></li>
+<li><p><strong>linenumber</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – Line number of the log call.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether to perform the logging (true) or not (false).</p>
