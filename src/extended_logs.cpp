@@ -15,11 +15,12 @@ namespace {
 lua_CFunction print_func;
 lua_CFunction original_print_func;
 
-bool filter_log(const char* source)
+bool filter_log(const char* source, int linenumber)
 {
     lua_getglobal(current_lua_state, "FilterLog");
     lua_pushstring(current_lua_state, source);
-    if (lua_pcall(current_lua_state, 1, 1, 0)) {
+    lua_pushinteger(current_lua_state, linenumber);
+    if (lua_pcall(current_lua_state, 2, 1, 0)) {
         lua_pop(current_lua_state, 1);
         return true;
     }
@@ -38,7 +39,7 @@ int print_hook(lua_State* L)
     lua_getstack(L, 1, &debug);
     lua_getinfo(L, "Sl", &debug);
 
-    if (np::do_log_filtering && !filter_log(debug.source))
+    if (np::do_log_filtering && !filter_log(debug.source, debug.currentline))
         return 0;
 
     std::string source_info =
