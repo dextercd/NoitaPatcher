@@ -18,6 +18,7 @@ add_library(noitapatcher MODULE
     game_pause.cpp
     lua_util.cpp
     extended_logs.cpp
+    iat_hook.cpp
 )
 
 target_link_libraries(noitapatcher
