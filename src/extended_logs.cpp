@@ -60,7 +60,7 @@ int print_hook(lua_State* L)
 
     lua_pushstring(L, source_info.c_str());
 
-    lua_insert(L, -print_args);
+    lua_insert(L, -print_args - 1);
     lua_settop(L, print_args + 1);
 
     return original_print_func(L);
