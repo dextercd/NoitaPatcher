@@ -562,18 +562,8 @@ bool np_initialised = false;
 extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
 {
+    static auto& noita = ThisExecutableInfo::get();
     std::cout << "luaopen_noitapatcher " << L << '\n';
-
-    current_lua_state = L;
-    luaL_register(L, "noitapatcher", nplib);
-
-    // Detect module unload
-    lua_newuserdata(L, 0);
-    lua_newtable(L);
-    lua_pushcclosure(L, luaclose_noitapatcher, 0);
-    lua_setfield(L, -2, "__gc");
-    lua_setmetatable(L, -2);
-    lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
 
     if (!np_initialised) {
         find_entity_funcs();
@@ -583,10 +573,21 @@ int luaopen_noitapatcher(lua_State* L)
 
         install_hooks();
         install_hook_GetUpdatedEntityID(L);
-        np::install_extended_logs_hook(L);
+        np::install_extended_logs_hook(noita, L);
 
         np_initialised = true;
     }
+
+    // Detect module unload
+    lua_newuserdata(L, 0);
+    lua_newtable(L);
+    lua_pushcclosure(L, luaclose_noitapatcher, 0);
+    lua_setfield(L, -2, "__gc");
+    lua_setmetatable(L, -2);
+    lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
+
+    current_lua_state = L;
+    luaL_register(L, "noitapatcher", nplib);
 
     return 1;
 }

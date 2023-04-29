@@ -27,6 +27,8 @@ int main(int argc, char** argv)
         return ((unsigned)ptr - (unsigned)lib + 0x400000);
     };
 
+    std::printf("%#x\n", adjust_ptr(iat_address(info, "lua51.dll", "lua_pcall")));
+
     /*auto location = pat.search(info.text_start, info.text_end);
     if (!location) {
         std::cout << "Not found.\n";
