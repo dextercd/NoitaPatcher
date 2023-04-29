@@ -16,12 +16,17 @@ lua_CFunction original_print_func;
 
 iat_hook pcall_hook;
 
-bool filter_log(const char* source, int linenumber)
+bool filter_log(const stack_entry& stack, const std::vector<std::string>& printed_strings)
 {
     lua_getglobal(current_lua_state, "FilterLog");
-    lua_pushstring(current_lua_state, source);
-    lua_pushinteger(current_lua_state, linenumber);
-    if (lua_pcall(current_lua_state, 2, 1, 0)) {
+    lua_pushstring(current_lua_state, stack.source.c_str());
+    lua_pushstring(current_lua_state, stack.function_name.c_str());
+    lua_pushinteger(current_lua_state, stack.line_number);
+    for (auto& str : printed_strings) {
+        lua_pushstring(current_lua_state, str.c_str());
+    }
+
+    if (lua_pcall(current_lua_state, 3 + std::size(printed_strings), 1, 0)) {
         lua_pop(current_lua_state, 1);
         return true;
     }
@@ -36,15 +41,23 @@ int print_hook(lua_State* L)
 {
     int print_args = lua_gettop(L);
 
-    lua_Debug debug{};
-    lua_getstack(L, 1, &debug);
-    lua_getinfo(L, "Sl", &debug);
+    auto stack = get_stack_entry(L, 1).value();
 
-    if (np::do_log_filtering && !filter_log(debug.source, debug.currentline))
+    std::vector<std::string> printed_strings;
+    for (int pi = 1; pi <= print_args; ++pi) {
+        lua_pushvalue(L, pi);
+        printed_strings.emplace_back(lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+
+    if (np::do_log_filtering && !filter_log(stack, std::move(printed_strings)))
         return 0;
 
-    std::string source_info =
-        std::string{"["} + debug.source + ":" + std::to_string(debug.currentline) + "]";
+    std::string source_info
+        = "[" + stack.source
+        + ":" + stack.function_name
+        + ":" + std::to_string(stack.line_number)
+        + "]";
 
     lua_pushstring(L, source_info.c_str());
 
