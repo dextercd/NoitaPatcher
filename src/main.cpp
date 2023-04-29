@@ -26,7 +26,10 @@ struct FireWandInfo {
 };
 
 fire_wand_function_t original_fire_wand_function;
+
 platform_shooter_damage_message_handler_t original_ps_damage_message_handler;
+struct PlatformShooterDamageMessageHookCreator;
+
 lua_State* current_lua_state;
 int player_entity_id = -1;
 int inject_updated_entity_id = -1;
@@ -161,62 +164,52 @@ void __cdecl fire_wand_hook(
     #endif
 }
 
-platform_shooter_damage_message_handler_t find_ps_damage_message_handler()
-{
-    executable_info noita = ThisExecutableInfo::get();
-
-    const std::uint8_t message_handler_bytes[] {
-        0xff, 0x75, 0x10, 0x8b, 0x48, 0x0c, 0xe8,
-    };
-
-    auto mh_push = std::search(
-        noita.text_start, noita.text_end,
-        std::begin(message_handler_bytes), std::end(message_handler_bytes)
-    );
-
-    if (mh_push == noita.text_end) {
-        std::cerr << "Couldn't find PlatformShooter damage message handler.\n";
-        return nullptr;
-    }
-
-    auto func_start = std::find_end(
-        noita.text_start, mh_push,
-        std::begin(function_intro), std::end(function_intro)
-    );
-
-    return (platform_shooter_damage_message_handler_t)func_start;
-}
-
 void __stdcall ps_damage_message_handler_hook(
-    Entity* entity, void* unknown, void* unknown2
-)
+    Entity* entity, void* unknown, void* unknown2)
 {
     if (player_entity_id == -1 || EntityGetId(entity) == player_entity_id)
         original_ps_damage_message_handler(entity, unknown, unknown2);
 }
 
-extern "C" __declspec(dllexport)
-void install_hooks()
-{
-    MH_Initialize();
+struct PlatformShooterDamageMessageHookCreator {
+    PlatformShooterDamageMessageHookCreator()
+    {
+        auto ps_damage_handler = find_ps_damage_message_handler();
+        MH_CreateHook(
+            (void*)ps_damage_handler,
+            (void*)ps_damage_message_handler_hook,
+            (void**)&original_ps_damage_message_handler
+        );
 
-    fire_wand_info = find_fire_wand();
-    MH_CreateHook(
-        (void*)fire_wand_info.func,
-        (void*)fire_wand_hook,
-        (void**)&original_fire_wand_function
-    );
+        MH_EnableHook((void*)ps_damage_handler);
+    }
 
-    auto ps_damage_handler = find_ps_damage_message_handler();
-    MH_CreateHook(
-        (void*)ps_damage_handler,
-        (void*)ps_damage_message_handler_hook,
-        (void**)&original_ps_damage_message_handler
-    );
+    platform_shooter_damage_message_handler_t find_ps_damage_message_handler()
+    {
+        executable_info noita = ThisExecutableInfo::get();
 
-    MH_EnableHook((void*)fire_wand_info.func);
-    MH_EnableHook((void*)ps_damage_handler);
-}
+        const std::uint8_t message_handler_bytes[] {
+            0xff, 0x75, 0x10, 0x8b, 0x48, 0x0c, 0xe8,
+        };
+
+        auto mh_push = std::search(
+            noita.text_start, noita.text_end,
+            std::begin(message_handler_bytes), std::end(message_handler_bytes)
+        );
+
+        if (mh_push == noita.text_end) {
+            std::cerr << "Couldn't find PlatformShooter damage message handler.\n";
+            return nullptr;
+        }
+
+        auto func_start = std::find_end(
+            noita.text_start, mh_push,
+            std::begin(function_intro), std::end(function_intro)
+        );
+
+        return (platform_shooter_damage_message_handler_t)func_start;
+    }
+};
 
 void find_entity_funcs()
 {
@@ -347,6 +340,27 @@ void SetUpdatedEntityId(int entity_id)
     inject_updated_entity_id = entity_id;
 }
 
+
+struct ShootProjectileFiredHooksCreator {
+    ShootProjectileFiredHooksCreator()
+    {
+        fire_wand_info = find_fire_wand();
+        MH_CreateHook(
+            (void*)fire_wand_info.func,
+            (void*)fire_wand_hook,
+            (void**)&original_fire_wand_function
+        );
+
+        MH_EnableHook((void*)fire_wand_info.func);
+    }
+};
+
+int InstallShootProjectileFiredCallbacks(lua_State* L)
+{
+    static ShootProjectileFiredHooksCreator hooks;
+    return 0;
+}
+
 int SetProjectileSpreadRNG(lua_State* L)
 {
     std::uint32_t rng_value = luaL_checkinteger(L, 1);
@@ -356,6 +370,7 @@ int SetProjectileSpreadRNG(lua_State* L)
 
 int RegisterPlayerEntityId(lua_State* L)
 {
+    static PlatformShooterDamageMessageHookCreator hook;
     player_entity_id = luaL_checkinteger(L, 1);
     return 0;
 }
@@ -532,7 +547,8 @@ int ForceLoadPixelScene(lua_State* L)
 int EnableExtendedLogging(lua_State* L)
 {
     if (lua_toboolean(L, 1)) {
-        np::enable_extended_logging_hook();
+        auto& noita = ThisExecutableInfo::get();
+        np::enable_extended_logging_hook(noita, L);
     } else {
         np::disable_extended_logging_hook();
     }
@@ -549,6 +565,7 @@ int EnableLogFiltering(lua_State* L)
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
+    {"InstallShootProjectileFiredCallbacks", InstallShootProjectileFiredCallbacks},
     {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
     {"SetActiveHeldEntity", SetActiveHeldEntity},
@@ -573,13 +590,12 @@ int luaopen_noitapatcher(lua_State* L)
     std::cout << "luaopen_noitapatcher " << L << '\n';
 
     if (!np_initialised) {
+        MH_Initialize();
+
         find_entity_funcs();
         find_deathmatch();
         find_use_item();
         find_duplicate_pixel_scene_check();
-
-        install_hooks();
-        np::install_extended_logs_hook(noita, L);
 
         np_initialised = true;
     }

@@ -3,6 +3,10 @@
 
 local noitapatcher = {}
 
+---Enable OnProjectileFired and OnProjectileFiredPost callbacks.
+---@return nil
+function noitapatcher.InstallShootProjectileFiredCallbacks() end
+
 ---Sets Noita's internal RNG state to the specified value.
 ---This RNG state is used for many things including setting a fired projectile's
 ---direction based on random spread.

@@ -11,10 +11,8 @@ extern lua_State* current_lua_state;
 
 namespace {
 
-lua_CFunction print_func;
-lua_CFunction original_print_func;
-
-iat_hook pcall_hook;
+int print_hook(lua_State* L);
+int enhanced_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
 bool filter_log(const stack_entry& stack, const std::vector<std::string>& printed_strings)
 {
@@ -36,6 +34,64 @@ bool filter_log(const stack_entry& stack, const std::vector<std::string>& printe
 
     return ret;
 }
+
+struct LoggingHooksCreator {
+    lua_CFunction print_func;
+    lua_CFunction original_print_func;
+
+    iat_hook pcall_hook;
+
+    LoggingHooksCreator(const executable_info& exe, lua_State* L)
+    {
+        auto pcall_iat = iat_address(exe, "lua51.dll", "lua_pcall");
+        pcall_hook = {
+            .location = pcall_iat,
+            .original = *pcall_iat,
+            .replacement = (void*)enhanced_pcall,
+        };
+
+        print_func = get_lua_c_binding(L, "print");
+        if (!print_func)
+            return;
+
+        MH_CreateHook(
+            (void*)print_func,
+            (void*)print_hook,
+            (void**)&original_print_func
+        );
+
+        MH_EnableHook((void*)print_func);
+    }
+
+    ~LoggingHooksCreator()
+    {
+        MH_RemoveHook((void*)print_func);
+        pcall_hook.disable();
+    }
+
+    LoggingHooksCreator& operator=(const LoggingHooksCreator&) = delete;
+};
+
+struct LoggingHooksManager {
+    std::optional<LoggingHooksCreator> hooks;
+
+    bool created() { return (bool)hooks; }
+
+    void create(const executable_info& exe, lua_State* L)
+    {
+        if (created())
+            return;
+
+        hooks.emplace(exe, L);
+    }
+
+    void destroy()
+    {
+        hooks.reset();
+    }
+};
+
+LoggingHooksManager logging_hooks_manager;
 
 int print_hook(lua_State* L)
 {
@@ -63,7 +119,7 @@ int print_hook(lua_State* L)
     lua_insert(L, -print_args - 1);
     lua_settop(L, print_args + 1);
 
-    return original_print_func(L);
+    return logging_hooks_manager.hooks->original_print_func(L);
 }
 
 int enhanced_pcall_error_handler(lua_State* L)
@@ -105,42 +161,16 @@ namespace np {
 
 bool do_log_filtering = false;
 
-void install_extended_logs_hook(const executable_info& exe, lua_State* L)
+
+
+void enable_extended_logging_hook(const executable_info& exe, lua_State* L)
 {
-    auto pcall_iat = iat_address(exe, "lua51.dll", "lua_pcall");
-    pcall_hook = {
-        .location = pcall_iat,
-        .original = *pcall_iat,
-        .replacement = (void*)enhanced_pcall,
-    };
-
-    print_func = get_lua_c_binding(L, "print");
-    if (!print_func)
-        return;
-
-    MH_CreateHook(
-        (void*)print_func,
-        (void*)print_hook,
-        (void**)&original_print_func
-    );
-}
-
-void enable_extended_logging_hook()
-{
-    if (!print_func)
-        return;
-
-    pcall_hook.enable();
-    MH_EnableHook((void*)print_func);
+    logging_hooks_manager.create(exe, L);
 }
 
 void disable_extended_logging_hook()
 {
-    if (!print_func)
-        return;
-
-    MH_DisableHook((void*)print_func);
-    pcall_hook.disable();
+    logging_hooks_manager.destroy();
 }
 
 }
