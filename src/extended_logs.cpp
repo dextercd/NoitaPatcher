@@ -55,7 +55,6 @@ int print_hook(lua_State* L)
 
     std::string source_info
         = "[" + stack.source
-        + ":" + stack.function_name
         + ":" + std::to_string(stack.line_number)
         + "]";
 
