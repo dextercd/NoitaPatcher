@@ -33,9 +33,11 @@ executable_info get_executable_info(void* module)
     info.rdata_start = (std::uint8_t*)module + rdata_section->VirtualAddress;
     info.rdata_end = info.rdata_start + rdata_section->SizeOfRawData;
 
+    auto impdes_offset = header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
+    info.import_descriptors = (char*)module + impdes_offset;
+
     char filename[MAX_PATH];
     GetModuleFileName((HMODULE)module, filename, MAX_PATH);
-
     info.is_dev_build = std::strstr(filename, "noita_dev.exe") != nullptr;
 
     return info;
@@ -45,4 +47,35 @@ ThisExecutableInfo::ThisExecutableInfo()
 {
     void* exe_location = GetModuleHandleA(nullptr);
     info = get_executable_info(exe_location);
+}
+
+void** iat_address(
+        const executable_info& exe,
+        const char* executable_name,
+        const char* function_name)
+{
+    auto base = (const char*)exe.module;
+    auto id = (IMAGE_IMPORT_DESCRIPTOR*)exe.import_descriptors;
+    for (; id->OriginalFirstThunk; ++id) {
+        auto import_name = (const char*)(base + id->Name);
+        if (std::strcmp(executable_name, import_name) != 0)
+            continue;
+
+        auto original_thunk = (IMAGE_THUNK_DATA*)(base + id->OriginalFirstThunk);
+        auto thunk = (IMAGE_THUNK_DATA*)(base + id->FirstThunk);
+
+        while (original_thunk) {
+            auto import_by_name = (IMAGE_IMPORT_BY_NAME*)(base + original_thunk->u1.AddressOfData);
+            auto import_func_name = (const char*)&import_by_name->Name;
+
+            if (std::strcmp(function_name, import_func_name) == 0) {
+                return (void**)&thunk->u1.Function;
+            }
+
+            ++original_thunk;
+            ++thunk;
+        }
+    }
+
+    return nullptr;
 }

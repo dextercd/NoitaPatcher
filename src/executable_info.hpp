@@ -12,6 +12,8 @@ struct executable_info {
     std::uint8_t* rdata_start;
     std::uint8_t* rdata_end;
 
+    void* import_descriptors;
+
     bool is_dev_build = false;
 };
 
@@ -29,5 +31,7 @@ public:
         return instance.info;
     }
 };
+
+void** iat_address(const executable_info& exe, const char* executable_name, const char* function_name);
 
 #endif // Header guard
