@@ -62,7 +62,7 @@ defined when you use NoitaPatcher. This may change in future versions.
    parameters that were generated from the RNG. (e.g. velocity/direction.)
 
 
-.. lua:function:: FilterLog(source, linenumber)
+.. lua:function:: FilterLog(source, function_name, linenumber, ...)
 
    Decide whether the log should be performed or not. Only called once enabled
    by calling :lua:func:`noitapatcher.EnableLogFiltering`.
@@ -71,8 +71,14 @@ defined when you use NoitaPatcher. This may change in future versions.
       there's no known source file.
    :type source: string
 
+   :param function_name: The function that called print.
+   :type function_name: string
+
    :param linenumber: Line number of the log call.
    :type linenumber: integer
+
+   :param ...: All the arguments that are logged, passed in as separate arguments
+   :type ...: string
 
    :return: Whether to perform the logging (true) or not (false).
    :rtype: boolean
