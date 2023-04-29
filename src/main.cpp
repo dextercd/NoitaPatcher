@@ -329,16 +329,23 @@ int GetUpdatedEntityID_hook(lua_State* L)
     return 1;
 }
 
-void install_hook_GetUpdatedEntityID(lua_State* L)
+struct GetUpdatedEntityID_HookCreator {
+    GetUpdatedEntityID_HookCreator()
+    {
+        lua_getglobal(current_lua_state, "GetUpdatedEntityID");
+        auto f = lua_tocfunction (current_lua_state, -1);
+        lua_pop(current_lua_state, 1);
+
+        MH_CreateHook((void*)f, (void*)GetUpdatedEntityID_hook, (void**)&GetUpdatedEntityID_original);
+        MH_EnableHook((void*)f);
+    }
+};
+
+void SetUpdatedEntityId(int entity_id)
 {
-    lua_getglobal(L, "GetUpdatedEntityID");
-    auto f = lua_tocfunction (L, -1);
-    lua_pop(L, 1);
-
-    MH_CreateHook((void*)f, (void*)GetUpdatedEntityID_hook, (void**)&GetUpdatedEntityID_original);
-    MH_EnableHook((void*)f);
+    static GetUpdatedEntityID_HookCreator hook;
+    inject_updated_entity_id = entity_id;
 }
-
 
 int SetProjectileSpreadRNG(lua_State* L)
 {
@@ -434,9 +441,9 @@ int UseItem(lua_State* L)
     message.mTarget.x = target_x;
     message.mTarget.y = target_y;
 
-    inject_updated_entity_id = responsible_entity_id;
+    SetUpdatedEntityId(responsible_entity_id);
     use_item(item_entity, &message);
-    inject_updated_entity_id = -1;
+    SetUpdatedEntityId(-1);
 
     return 0;
 }
@@ -572,7 +579,6 @@ int luaopen_noitapatcher(lua_State* L)
         find_duplicate_pixel_scene_check();
 
         install_hooks();
-        install_hook_GetUpdatedEntityID(L);
         np::install_extended_logs_hook(noita, L);
 
         np_initialised = true;
