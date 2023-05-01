@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <unordered_map>
 
 #include <MinHook.h>
 
@@ -42,6 +43,8 @@ send_message_use_item_t use_item;
 void* duplicate_pixel_scene_check = nullptr;
 
 DeathMatch* g_deathmatch;
+SystemManager* system_manager;
+
 
 FireWandInfo find_fire_wand()
 {
@@ -311,6 +314,24 @@ void find_duplicate_pixel_scene_check()
     duplicate_pixel_scene_check = (char*)result.ptr + 11;
 }
 
+void find_system_manager()
+{
+    auto& noita = ThisExecutableInfo::get();
+    auto pattern = make_pattern(
+        Bytes{0xff, 0x77, 0x34, 0xb9},
+        Capture{"SystemManager", 4},
+        Bytes{0xff}, Pad{1}, Bytes{0x30, 0xe8}
+    );
+
+    auto result = pattern.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find SystemManager.\n";
+        return;
+    }
+
+    system_manager = result.get<SystemManager*>("SystemManager");
+}
+
 lua_CFunction GetUpdatedEntityID_original;
 
 int GetUpdatedEntityID_hook(lua_State* L)
@@ -562,6 +583,52 @@ int EnableLogFiltering(lua_State* L)
     return 0;
 }
 
+std::unordered_map<std::string, void*> disabled_components;
+
+void __stdcall disable_updates(void*) {}
+
+int ComponentUpdatesSetEnabled(lua_State* L)
+{
+    auto component_ = ulua_checkstringview(L, 1);
+    bool change_to = lua_toboolean(L, 2);
+
+    std::string component{component_};
+
+    auto current = disabled_components.find(component) == std::end(disabled_components);
+
+    if (current == change_to) {
+        lua_pushboolean(L, true);
+        return 1;
+    }
+
+    std::string search = "class " + component;
+
+    for (auto&& system : system_manager->mSystems) {
+        if (system->vtable->get_system_name(system).as_view() == search) {
+            auto address = (void**)&system->vtable->update_components;
+            void* value_to_write{};
+            if (change_to) {
+                value_to_write = disabled_components[component];
+                disabled_components.erase(component);
+            } else {
+                value_to_write = (void*)disable_updates;
+                disabled_components[component] = *address;
+            }
+
+            DWORD prot_restore;
+            VirtualProtect(address, sizeof(*address), PAGE_READWRITE, &prot_restore);
+            *address = value_to_write;
+            VirtualProtect(address, sizeof(*address), prot_restore, &prot_restore);
+
+            lua_pushboolean(L, true);
+            return 1;
+        }
+    }
+
+    lua_pushboolean(L, false);
+    return 1;
+}
+
 int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
@@ -578,6 +645,7 @@ static const luaL_Reg nplib[] = {
     {"ForceLoadPixelScene", ForceLoadPixelScene},
     {"EnableExtendedLogging", EnableExtendedLogging},
     {"EnableLogFiltering", EnableLogFiltering},
+    {"ComponentUpdatesSetEnabled", ComponentUpdatesSetEnabled},
     {},
 };
 
@@ -596,6 +664,7 @@ int luaopen_noitapatcher(lua_State* L)
         find_deathmatch();
         find_use_item();
         find_duplicate_pixel_scene_check();
+        find_system_manager();
 
         np_initialised = true;
     }

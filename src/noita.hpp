@@ -4,6 +4,7 @@
 #include "executable_info.hpp"
 
 #include <vs2013/vector.hpp>
+#include <vs2013/string.hpp>
 
 struct vec2 {
     float x;
@@ -37,6 +38,43 @@ struct DeathMatch {
 
 static_assert(sizeof(void*) == 4);
 static_assert(sizeof(DeathMatch) == 200);
+
+struct ComponentUpdator;
+
+struct ComponentUpdator_vtable {
+    void (__thiscall* destructor)(ComponentUpdator* self, bool do_delete);
+    void (__thiscall* Unk1)(ComponentUpdator* self);
+    void (__thiscall* Unk3)(ComponentUpdator* self);
+    void (__thiscall* update_components)(ComponentUpdator* self, void*);
+    int (__thiscall* get_update_priority)(ComponentUpdator* self);
+    void (__thiscall* Unk4)(ComponentUpdator* self);
+    const vs13::string& (__thiscall* get_system_name)(ComponentUpdator* self);
+    void (__thiscall* Unk5)(ComponentUpdator* self);
+    void (__thiscall* set_component_buffer)(ComponentUpdator* self, void*);
+    void* (__thiscall* get_component_buffer)(ComponentUpdator* self);
+    void (__thiscall* Unk6)(ComponentUpdator* self);
+    void (__thiscall* Unk7)(ComponentUpdator* self);
+    void (__thiscall* Unk8)(ComponentUpdator* self);
+    void (__thiscall* Unk9)(ComponentUpdator* self);
+    void (__thiscall* Unk10)(ComponentUpdator* self);
+    void (__thiscall* Unk11)(ComponentUpdator* self);
+    void (__thiscall* Unk12)(ComponentUpdator* self);
+    bool (__thiscall* is_multi_threaded)(ComponentUpdator* self);
+    void (__thiscall* Unk13)(ComponentUpdator* self);
+    void (__thiscall* Unk14)(ComponentUpdator* self);
+};
+
+struct ComponentUpdator {
+    ComponentUpdator_vtable* vtable;
+};
+
+struct SystemManager {
+    int a;
+    int b;
+    vs13::vector<void*> mSystemAutoCreators;
+    vs13::vector<ComponentUpdator*> mSystems;
+};
+
 
 // Note: It's really a mix between __fastcall (uses registers) and
 // __cdecl (stack cleanup is done by caller).

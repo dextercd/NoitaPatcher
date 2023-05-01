@@ -7,6 +7,7 @@ extern "C" {
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 struct stack_entry {
@@ -19,5 +20,7 @@ lua_CFunction get_lua_c_binding(lua_State* L, const char* func_name);
 
 std::optional<stack_entry> get_stack_entry(lua_State* L, int level);
 std::vector<stack_entry> get_stack_trace(lua_State* L, int start_level, int count = -1);
+
+std::string_view ulua_checkstringview(lua_State* L, int narg);
 
 #endif // Header guard

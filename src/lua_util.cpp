@@ -1,4 +1,5 @@
 #include "lua_util.hpp"
+#include <iostream>
 
 #include <utility>
 
@@ -42,4 +43,13 @@ std::vector<stack_entry> get_stack_trace(lua_State* L, int start_level, int coun
     }
 
     return trace;
+}
+
+std::string_view ulua_checkstringview(lua_State* L, int narg)
+{
+    std::size_t len;
+    auto str = lua_tolstring(L, narg, &len);
+
+    if (!str) return "";
+    return {str, len};
 }
