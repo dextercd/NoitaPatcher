@@ -25,6 +25,7 @@ target_link_libraries(noitapatcher
     PRIVATE
         memory_util
         ${LUA_LIBRARIES}
+        vs2013
 )
 
 target_include_directories(noitapatcher PRIVATE ${LUA_INCLUDE_DIR})

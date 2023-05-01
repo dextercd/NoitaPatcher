@@ -40,7 +40,9 @@ FetchContent_MakeAvailable(Zydis)
 
 find_package(Lua REQUIRED)
 
+add_subdirectory(vs2013)
 add_subdirectory(src)
+
 if (NOITAPATCHER_DOCS)
     add_subdirectory(Documentation)
 endif()
