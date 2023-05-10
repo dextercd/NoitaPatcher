@@ -237,14 +237,9 @@ void find_entity_funcs()
     entity_get_by_id = (entity_get_by_id_t)entity_result.get_rela_call("EntityGet");
 
     auto set_active_pat = make_pattern(
-        Bytes{0x85}, Pad{1},
-        Bytes{0x0f, 0x84}, Pad{4},
-        Bytes{0x85}, Pad{1},
-        Bytes{0x74}, Pad{1},
-        Bytes{0x8b, 0x4b, 0x50, 0x89},
-        Pad{1},
-        Bytes{0x50, 0x8b, 0x4b, 0x54}
+        Bytes{0x89, 0x47, 0x58, 0x85, 0xf6}
     );
+
     auto set_active_result = set_active_pat.search(noita, noita.text_start, noita.text_end);
 
     if (!set_active_result) {
@@ -280,10 +275,12 @@ void find_use_item()
 {
     executable_info noita = ThisExecutableInfo::get();
     auto pat = make_pattern(
-        Bytes{0x89, 0x44, 0x24, 0x44, 0x8b, 0x44, 0x24, 0x18, 0x89, 0x44, 0x24, 0x48, 0xe8},
-        Pad{4},
-        Bytes{0x8d, 0x44, 0x24, 0x24, 0x50},
-        Pad{1},
+        Bytes{0x89, 0x44, 0x24}, Pad{1},
+        Bytes{0x8b, 0x44, 0x24}, Pad{1},
+        Bytes{0x89, 0x44, 0x24}, Pad{1},
+        Bytes{0xe8}, Pad{4},
+        Bytes{0x8d, 0x44, 0x24}, Pad{1},
+        Pad{2},
         Bytes{0xe8}, Capture{"UseItem", 4}
     );
     auto result = pat.search(noita, noita.text_start, noita.text_end);
