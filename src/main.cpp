@@ -237,7 +237,9 @@ void find_entity_funcs()
     entity_get_by_id = (entity_get_by_id_t)entity_result.get_rela_call("EntityGet");
 
     auto set_active_pat = make_pattern(
-        Bytes{0x89, 0x47, 0x58, 0x85, 0xf6}
+        Bytes{0x83, 0xc4, 0x04, 0x89},
+        Pad{1},
+        Bytes{0x58, 0x85, 0xf6}
     );
 
     auto set_active_result = set_active_pat.search(noita, noita.text_start, noita.text_end);
