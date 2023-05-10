@@ -10,6 +10,8 @@ project(NoitaPatcher
 set(NoitaPatcher_VERSION_TWEAK 0)
 if (PROJECT_IS_TOP_LEVEL)
     set(PROJECT_VERSION_TWEAK 0)
+
+    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "ProgramDatabase")
 endif()
 
 # Needed for MINGW to find the LuaJIT dll

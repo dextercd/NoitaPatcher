@@ -41,3 +41,12 @@ install(
     COMPONENT NoitaPatcher
     LIBRARY DESTINATION NoitaPatcher
 )
+
+if (CMAKE_CXX_LINKER_SUPPORTS_PDB)
+    install(
+        FILES $<TARGET_PDB_FILE:noitapatcher>
+        COMPONENT NoitaPatcher
+        DESTINATION NoitaPatcher
+        OPTIONAL
+    )
+endif()
