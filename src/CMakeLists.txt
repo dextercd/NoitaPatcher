@@ -13,12 +13,15 @@ target_link_libraries(memory_util
         minhook
 )
 
+configure_file(noitapatcher.rc.in noitapatcher.rc @ONLY)
+
 add_library(noitapatcher MODULE
     main.cpp
     game_pause.cpp
     lua_util.cpp
     extended_logs.cpp
     iat_hook.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
 target_link_libraries(noitapatcher

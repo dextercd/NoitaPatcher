@@ -1,0 +1,27 @@
+#include <windows.h>
+
+#pragma code_page(65001)
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION @NoitaPatcher_VERSION_MAJOR@, @NoitaPatcher_VERSION_MINOR@, @NoitaPatcher_VERSION_PATCH@, @NoitaPatcher_VERSION_TWEAK@
+    PRODUCTVERSION @PROJECT_VERSION_MAJOR@, @PROJECT_VERSION_MINOR@, @PROJECT_VERSION_PATCH@, @PROJECT_VERSION_TWEAK@
+    FILEOS VOS_NT
+    FILETYPE VFT_DLL
+BEGIN
+    BLOCK "VarFileInfo" {
+        VALUE "Translation", 0x0409, 1200
+    }
+
+    BLOCK "StringFileInfo" {
+        BLOCK "040904E4" {
+            VALUE "CompanyName", "dextercd\0"
+            VALUE "FileDescription", "Noita Modding Extensions\0"
+            VALUE "FileVersion", "@NoitaPatcher_VERSION@\0"
+            VALUE "LegalCopyright", "Copyright Dexter Castor Döpping\0"
+            VALUE "OriginalFilename", "noitapatcher.dll\0"
+            VALUE "ProductVersion", "@PROJECT_VERSION@\0"
+            VALUE "ProductName", "NoitaPatcher\0"
+            VALUE "InternalName", "noitapatcher\0"
+        }
+    }
+END

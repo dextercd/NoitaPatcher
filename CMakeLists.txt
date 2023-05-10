@@ -7,6 +7,11 @@ project(NoitaPatcher
     LANGUAGES CXX C
 )
 
+set(NoitaPatcher_VERSION_TWEAK 0)
+if (PROJECT_IS_TOP_LEVEL)
+    set(PROJECT_VERSION_TWEAK 0)
+endif()
+
 # Needed for MINGW to find the LuaJIT dll
 if (MINGW)
     set(CMAKE_FIND_LIBRARY_SUFFIXES .dll ${CMAKE_FIND_LIBRARY_SUFFIXES})
