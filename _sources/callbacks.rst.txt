@@ -2,10 +2,11 @@ callbacks
 ---------
 
 NoitaPatcher adds some callbacks to whatever Lua context imports its module.
-At the moment `OnProjectileFired` and `OnProjectileFiredPost` **must** be
-defined when you use NoitaPatcher. This may change in future versions.
 
-.. lua:function:: OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, unknown2, unknown3)
+To use `OnProjectileFired` and `OnProjectileFiredPost` you must call
+:lua:func:`noitapatcher.InstallShootProjectileFiredCallbacks`.
+
+.. lua:function:: OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, multicast_index, unknown3)
 
    Called when a projectile is fired.
 
@@ -44,8 +45,8 @@ defined when you use NoitaPatcher. This may change in future versions.
    :param unknown1: 4 byte integer. Unknown what this is for.
    :type unknown1: integer
 
-   :param unknown2: 4 byte integer. Unknown what this is for.
-   :type unknown2: integer
+   :param multicast_index: What number projectile is this in a multi-cast. -1 if multi-casts doesn't make sense.
+   :type multicast_index: integer
 
    :param unknown3: 1 byte integer, probably actually a boolean. It's unknown what this is for.
    :type unknown3: integer

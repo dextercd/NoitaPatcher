@@ -32,12 +32,12 @@
             
   <section id="callbacks">
 <h1>callbacks<a class="headerlink" href="#callbacks" title="Permalink to this heading">¶</a></h1>
-<p>NoitaPatcher adds some callbacks to whatever Lua context imports its module.
-At the moment <cite>OnProjectileFired</cite> and <cite>OnProjectileFiredPost</cite> <strong>must</strong> be
-defined when you use NoitaPatcher. This may change in future versions.</p>
+<p>NoitaPatcher adds some callbacks to whatever Lua context imports its module.</p>
+<p>To use <cite>OnProjectileFired</cite> and <cite>OnProjectileFiredPost</cite> you must call
+<a class="reference internal" href="noitapatcher.html#noitapatcher.InstallShootProjectileFiredCallbacks" title="noitapatcher.InstallShootProjectileFiredCallbacks"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">noitapatcher.InstallShootProjectileFiredCallbacks()</span></code></a>.</p>
 <dl class="lua function">
 <dt class="sig sig-object lua" id="OnProjectileFired">
-<em class="property"> </em><span class="sig-name descname"><span class="pre">OnProjectileFired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shooter_id</span></em>, <em class="sig-param"><span class="pre">projectile_id</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">position_x</span></em>, <em class="sig-param"><span class="pre">position_y</span></em>, <em class="sig-param"><span class="pre">target_x</span></em>, <em class="sig-param"><span class="pre">target_y</span></em>, <em class="sig-param"><span class="pre">send_message</span></em>, <em class="sig-param"><span class="pre">unknown1</span></em>, <em class="sig-param"><span class="pre">unknown2</span></em>, <em class="sig-param"><span class="pre">unknown3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#OnProjectileFired" title="Permalink to this definition">¶</a></dt>
+<em class="property"> </em><span class="sig-name descname"><span class="pre">OnProjectileFired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shooter_id</span></em>, <em class="sig-param"><span class="pre">projectile_id</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">position_x</span></em>, <em class="sig-param"><span class="pre">position_y</span></em>, <em class="sig-param"><span class="pre">target_x</span></em>, <em class="sig-param"><span class="pre">target_y</span></em>, <em class="sig-param"><span class="pre">send_message</span></em>, <em class="sig-param"><span class="pre">unknown1</span></em>, <em class="sig-param"><span class="pre">multicast_index</span></em>, <em class="sig-param"><span class="pre">unknown3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#OnProjectileFired" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a projectile is fired.</p>
 <p>The RNG that would be used is passed in, but at this point it can be modified
 by <a class="reference internal" href="noitapatcher.html#noitapatcher.SetProjectileSpreadRNG" title="noitapatcher.SetProjectileSpreadRNG"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">noitapatcher.SetProjectileSpreadRNG()</span></code></a>.</p>
@@ -57,7 +57,7 @@ to synchronise the RNG value to other clients.</p>
 <p>This causes things like the ‘shot’ Lua callback to be called.</p>
 </p></li>
 <li><p><strong>unknown1</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – 4 byte integer. Unknown what this is for.</p></li>
-<li><p><strong>unknown2</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – 4 byte integer. Unknown what this is for.</p></li>
+<li><p><strong>multicast_index</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – What number projectile is this in a multi-cast. -1 if multi-casts doesn’t make sense.</p></li>
 <li><p><strong>unknown3</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – 1 byte integer, probably actually a boolean. It’s unknown what this is for.</p></li>
 </ul>
 </dd>
