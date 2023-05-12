@@ -2,8 +2,9 @@ callbacks
 ---------
 
 NoitaPatcher adds some callbacks to whatever Lua context imports its module.
-At the moment `OnProjectileFired` and `OnProjectileFiredPost` **must** be
-defined when you use NoitaPatcher. This may change in future versions.
+
+To use `OnProjectileFired` and `OnProjectileFiredPost` you must call
+:lua:func:`noitapatcher.InstallShootProjectileFiredCallbacks`.
 
 .. lua:function:: OnProjectileFired(shooter_id, projectile_id, rng, position_x, position_y, target_x, target_y, send_message, unknown1, multicast_index, unknown3)
 
