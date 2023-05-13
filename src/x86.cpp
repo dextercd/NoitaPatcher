@@ -142,8 +142,6 @@ void dump_assembly(std::ostream& os, const DecodedRange& decoded)
     ZydisFormatter formatter;
     ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
 
-    auto load_addr = decoded.load_address();
-
     auto os_flags = os.flags();
     auto os_fill = os.fill();
 
@@ -167,8 +165,6 @@ void dump_instr(std::ostream& os, const DecodedRange& decoded, const Instruction
 {
     ZydisFormatter formatter;
     ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
-
-    auto load_addr = decoded.load_address();
 
     auto os_flags = os.flags();
     auto os_fill = os.fill();

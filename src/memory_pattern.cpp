@@ -99,7 +99,7 @@ FindResult Pattern::search(const executable_info& exe, const void* begin_, const
     auto begin = (char*)begin_;
     auto end = (char*)end_;
 
-    if (end - begin < size())
+    if (end < begin || (std::size_t)(end - begin) < size())
         return nullptr;
 
     const auto& first_part = parts.front();

@@ -159,7 +159,7 @@ template<class... Args>
 Pattern make_pattern(Args&&... args)
 {
     Pattern pat;
-    auto dummy = {(pat.add(std::forward<Args>(args)), 0)...};
+    [[maybe_unused]] auto dummy = {(pat.add(std::forward<Args>(args)), 0)...};
     return pat;
 }
 

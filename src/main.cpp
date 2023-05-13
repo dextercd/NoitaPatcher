@@ -653,7 +653,6 @@ bool np_initialised = false;
 extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
 {
-    static auto& noita = ThisExecutableInfo::get();
     std::cout << "luaopen_noitapatcher " << L << '\n';
 
     if (!np_initialised) {
