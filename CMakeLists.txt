@@ -4,6 +4,8 @@ set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
 
 project(NoitaPatcher
     VERSION 1.13.4
+    HOMEPAGE_URL "https://github.com/dextercd/NoitaPatcher"
+    DESCRIPTION "Noita Modding Extensions"
     LANGUAGES CXX C
 )
 

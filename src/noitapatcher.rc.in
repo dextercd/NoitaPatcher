@@ -14,13 +14,14 @@ BEGIN
 
     BLOCK "StringFileInfo" {
         BLOCK "040904E4" {
+            VALUE "Comments", "@NoitaPatcher_HOMEPAGE_URL@\0"
             VALUE "CompanyName", "dextercd\0"
-            VALUE "FileDescription", "Noita Modding Extensions\0"
+            VALUE "FileDescription", "@NoitaPatcher_DESCRIPTION@\0"
             VALUE "FileVersion", "@NoitaPatcher_VERSION@\0"
             VALUE "LegalCopyright", "Copyright Dexter Castor Döpping\0"
             VALUE "OriginalFilename", "noitapatcher.dll\0"
             VALUE "ProductVersion", "@PROJECT_VERSION@\0"
-            VALUE "ProductName", "NoitaPatcher\0"
+            VALUE "ProductName", "@CMAKE_PROJECT_NAME@\0"
             VALUE "InternalName", "noitapatcher\0"
         }
     }
