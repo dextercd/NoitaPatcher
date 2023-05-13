@@ -1,5 +1,5 @@
-#ifndef NOITA_PATCHER_UTILS_HPP
-#define NOITA_PATCHER_UTILS_HPP
+#ifndef NP_UTILS_HPP
+#define NP_UTILS_HPP
 
 template<class MemFn>
 void* memfn_voidp(MemFn memfn)
