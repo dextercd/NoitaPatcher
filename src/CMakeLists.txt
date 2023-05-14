@@ -33,6 +33,30 @@ target_link_libraries(noitapatcher
 
 target_include_directories(noitapatcher PRIVATE ${LUA_INCLUDE_DIR})
 
+# Setup source link for noitapatcher
+
+if (MSVC)
+    find_package(Git)
+    add_custom_target(pdb_source_link ALL
+        WORKING_DIRECTORY ${NoitaPatcher_SOURCE_DIR}
+        COMMAND ${CMAKE_COMMAND}
+            -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+            -D TEMPLATE=${CMAKE_CURRENT_SOURCE_DIR}/source_link.json.in
+            -D OUTPUT=${CMAKE_CURRENT_BINARY_DIR}/source_link.json
+            -P ${NoitaPatcher_SOURCE_DIR}/cmake/git_template.cmake
+        BYPRODUCTS
+            ${CMAKE_CURRENT_BINARY_DIR}/source_link.json
+    )
+
+    set_property(TARGET noitapatcher APPEND
+        PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/source_link.json
+    )
+    target_link_options(noitapatcher
+        PRIVATE /sourcelink:${CMAKE_CURRENT_BINARY_DIR}/source_link.json
+    )
+endif()
+
+
 add_executable(noitadis pattern_test.cpp)
 target_link_libraries(noitadis PRIVATE memory_util)
 

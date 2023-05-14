@@ -1,0 +1,5 @@
+{
+    "documents": {
+        "@ESCAPE_DIR@\\*": "https://raw.githubusercontent.com/dextercd/NoitaPatcher/@GIT_HASH@/*"
+    }
+}
