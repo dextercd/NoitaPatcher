@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.26)
 
 set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
 
@@ -14,6 +14,9 @@ if (PROJECT_IS_TOP_LEVEL)
     set(PROJECT_VERSION_TWEAK 0)
 
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "ProgramDatabase")
+    if (MSVC)
+        add_link_options(/DEBUG)
+    endif()
 endif()
 
 # Needed for MINGW to find the LuaJIT dll
