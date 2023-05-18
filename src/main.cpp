@@ -20,6 +20,7 @@ extern "C" {
 #include "memory_pattern.hpp"
 #include "game_pause.hpp"
 #include "extended_logs.hpp"
+#include "damage_detail.hpp"
 #include "calling_convention.hpp"
 
 struct FireWandInfo {
@@ -375,6 +376,40 @@ int InstallShootProjectileFiredCallbacks(lua_State* L)
     return 0;
 }
 
+struct DamageDetailsHooksCreators {
+    DamageDetailsHooksCreators()
+    {
+        auto& noita = ThisExecutableInfo::get();
+        auto error_string_location = find_rdata_string(
+                noita,
+                "TakeDamage_Impl() - DamageModelComponent couldn't be found");
+
+        if (!error_string_location) {
+            std::cerr << "Couldn't find TakeDamage_Impl() string\n";
+            return;
+        }
+
+        auto pattern = make_pattern(Bytes{0x68}, Raw{error_string_location});
+        auto result = pattern.search(noita, noita.text_start, noita.text_end);
+
+        if (!result) {
+            std::cerr << "Couldn't find usage of TakeDamage_Impl() string\n";
+            return;
+        }
+
+        auto take_damage_impl = find_function_bounds(noita, result.ptr);
+        std::cout << "found TakeDamage_Impl: " << take_damage_impl.start << '\n';
+        np::install_damage_detail_hook((void*)take_damage_impl.start);
+
+    }
+};
+
+int InstallDamageDetailsPatch(lua_State* L)
+{
+    static DamageDetailsHooksCreators hooks;
+    return 0;
+}
+
 int SetProjectileSpreadRNG(lua_State* L)
 {
     std::uint32_t rng_value = luaL_checkinteger(L, 1);
@@ -626,6 +661,7 @@ int luaclose_noitapatcher(lua_State* L);
 
 static const luaL_Reg nplib[] = {
     {"InstallShootProjectileFiredCallbacks", InstallShootProjectileFiredCallbacks},
+    {"InstallDamageDetailsPatch", InstallDamageDetailsPatch},
     {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
     {"SetActiveHeldEntity", SetActiveHeldEntity},
