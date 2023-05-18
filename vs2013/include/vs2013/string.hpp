@@ -13,6 +13,8 @@ struct string {
     std::size_t size_;
     std::size_t capacity_;
 
+    ~string() = delete;
+
     bool is_sso() const
     {
         return capacity() < 0x10;
@@ -37,6 +39,9 @@ struct string {
     std::size_t capacity() const { return capacity_; }
 
     std::string_view as_view() const { return {c_str(), size()}; }
+
+    char& operator[](std::size_t i) { return data()[i]; }
+    const char& operator[](std::size_t i) const { return data()[i]; }
 };
 
 } // vs13::
