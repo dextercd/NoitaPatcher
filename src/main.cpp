@@ -20,6 +20,7 @@ extern "C" {
 #include "memory_pattern.hpp"
 #include "game_pause.hpp"
 #include "extended_logs.hpp"
+#include "calling_convention.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -97,14 +98,7 @@ void __cdecl fire_wand_hook(
 {
     Entity* shooter;
     Entity* verlet_parent;
-    #ifdef __GNUC__
-    asm("" : "=c"(shooter), "=d"(verlet_parent));
-    #else
-    __asm {
-        mov shooter, ecx
-        mov verlet_parent, edx
-    }
-    #endif
+    GET_FASTCALL_REGISTER_ARGS(shooter, verlet_parent);
 
     auto do_callback = [&] (const char* cbname) {
         if (!current_lua_state)
