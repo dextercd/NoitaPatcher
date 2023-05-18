@@ -22,6 +22,7 @@ extern "C" {
 #include "extended_logs.hpp"
 #include "damage_detail.hpp"
 #include "calling_convention.hpp"
+#include "global_extensions.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -401,6 +402,8 @@ struct DamageDetailsHooksCreators {
         std::cout << "found TakeDamage_Impl: " << take_damage_impl.start << '\n';
         np::install_damage_detail_hook((void*)take_damage_impl.start);
 
+        GlobalExtensions::instance()
+            .add_extension("GetDamageDetails", np::GetDamageDetails);
     }
 };
 
@@ -680,6 +683,15 @@ static const luaL_Reg nplib[] = {
 
 bool np_initialised = false;
 
+lua_State* (*luaL_newstate_original)();
+
+lua_State* luaL_newstate_hook()
+{
+    auto new_state = luaL_newstate_original();
+    GlobalExtensions::instance().grant_extensions(new_state);
+    return new_state;
+}
+
 extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
 {
@@ -693,6 +705,15 @@ int luaopen_noitapatcher(lua_State* L)
         find_use_item();
         find_duplicate_pixel_scene_check();
         find_system_manager();
+
+        auto lua_lib = LoadLibraryA("lua51.dll");
+        auto newstate_func = (void*)GetProcAddress(lua_lib, "luaL_newstate");
+        MH_CreateHook(
+            newstate_func,
+            (void*)luaL_newstate_hook,
+            (void**)&luaL_newstate_original
+        );
+        MH_EnableHook(newstate_func);
 
         np_initialised = true;
     }
