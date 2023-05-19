@@ -91,20 +91,20 @@ int GetDamageDetails(lua_State* L)
     lua_setfield(L, -2, "ragdoll_fx");
 
     lua_createtable(L, 2, 0);
-    lua_pushnumber(L, details.impulse.x);
     lua_pushinteger(L, 1);
+    lua_pushnumber(L, details.impulse.x);
     lua_settable(L, -3);
-    lua_pushnumber(L, details.impulse.y);
     lua_pushinteger(L, 2);
+    lua_pushnumber(L, details.impulse.y);
     lua_settable(L, -3);
     lua_setfield(L, -2, "impulse");
 
     lua_createtable(L, 2, 0);
-    lua_pushnumber(L, details.world_pos.x);
     lua_pushinteger(L, 1);
+    lua_pushnumber(L, details.world_pos.x);
     lua_settable(L, -3);
-    lua_pushnumber(L, details.world_pos.y);
     lua_pushinteger(L, 2);
+    lua_pushnumber(L, details.world_pos.y);
     lua_settable(L, -3);
     lua_setfield(L, -2, "world_pos");
 
