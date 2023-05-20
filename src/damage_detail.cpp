@@ -17,6 +17,7 @@ struct DamageDetails {
     vec2 impulse;
     vec2 world_pos;
     float knockback_force;
+    float blood_multiplier;
 };
 
 std::vector<DamageDetails> damage_details;
@@ -31,6 +32,11 @@ struct DamageThing {
     int entity_type_id;
     char unknown1[8];
     unsigned ragdoll_fx;
+    char unknown2[4];
+    vs13::string ragdoll_entity_file;
+    vs13::string str_tags_q;
+    char unknown3[8];
+    float blood_multiplier;
     // bunch more stuff here
 };
 
@@ -56,14 +62,14 @@ void __cdecl inflict_damage_hook(
     float damage;
     FLOAT_FROM_REGISTER(damage, xmm2);
 
-    damage_details.push_back(
-        DamageDetails{
-            damage_types,
-            damage_args->ragdoll_fx,
-            damage_args->impulse,
-            damage_args->world_pos,
-            damage_args->knockback_force
-        });
+    damage_details.push_back({
+        .damage_types = damage_types,
+        .ragdoll_fx = damage_args->ragdoll_fx,
+        .impulse = damage_args->impulse,
+        .world_pos = damage_args->world_pos,
+        .knockback_force = damage_args->knockback_force,
+        .blood_multiplier = damage_args->blood_multiplier,
+    });
 
     FLOAT_TO_REGISTER(xmm2, damage);
     original_inflict_damage(entity, damage_model, description, damage_types, damage_args);
@@ -106,6 +112,9 @@ int GetDamageDetails(lua_State* L)
 
     lua_pushinteger(L, details.knockback_force);
     lua_setfield(L, -2, "knockback_force");
+
+    lua_pushnumber(L, details.blood_multiplier);
+    lua_setfield(L, -2, "blood_multiplier");
 
     return 1;
 }
