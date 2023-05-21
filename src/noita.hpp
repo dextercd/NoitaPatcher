@@ -12,6 +12,8 @@ struct vec2 {
 };
 
 struct EntityManager;
+extern EntityManager* entity_manager;
+
 struct Entity;
 
 struct NormalEntity {
@@ -102,6 +104,8 @@ using platform_shooter_damage_message_handler_t =
 
 using entity_get_by_id_t =
     Entity* (__thiscall*)(EntityManager*, int entity_id);
+
+extern entity_get_by_id_t entity_get_by_id;
 
 using set_active_held_entity_t =
     void (__fastcall*)(Entity* entity, Entity* item_entity, bool unk, bool make_noise);

@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include <MinHook.h>
+#include <vs2013/init.hpp>
 
 extern "C" {
 #include <lua.h>
@@ -23,6 +24,7 @@ extern "C" {
 #include "damage_detail.hpp"
 #include "calling_convention.hpp"
 #include "global_extensions.hpp"
+#include "entity_serialisation.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -325,6 +327,51 @@ void find_system_manager()
     }
 
     system_manager = result.get<SystemManager*>("SystemManager");
+}
+
+void find_entity_serialisation()
+{
+    auto& noita = ThisExecutableInfo::get();
+    auto ser_pattern = make_pattern(
+        Bytes{0xe8}, Pad{4},
+        Bytes{0xc7, 0x45, 0xfc, 0x01, 0x00, 0x00, 0x00, 0x8d, 0x4d}, Pad{1},
+        Bytes{0x8b}, Pad{1},
+        Bytes{0x51, 0x8b}, Pad{1},
+        Bytes{0xff, 0x50, 0x10}
+    );
+
+    auto ser_result = ser_pattern.search(noita, noita.text_start, noita.text_end);
+    if (!ser_result) {
+        std::cerr << "Couldn't find entity serialisation routine.\n";
+        return;
+    }
+
+    auto serialisation_bounds = find_function_bounds(noita, ser_result.ptr);
+    np::serialise_entity_func = serialisation_bounds.start;
+    std::cout << "np::serialise_entity_func: " << np::serialise_entity_func << '\n';
+
+    auto deser_pattern = make_pattern(
+        Bytes{0xc7, 0x45, 0xfc, 0x01, 0x00, 0x00, 0x00, 0x8d, 0x4d}, Pad{1},
+        Bytes{0x8b}, Pad{1},
+        Bytes{0x51, 0x8b}, Pad{1},
+        Bytes{0xff, 0x50, 0x10}
+    );
+
+    auto deser_result = deser_pattern.search(
+        noita,
+        // Deserialisation function appears after serialisation
+        serialisation_bounds.end,
+        noita.text_end
+    );
+
+    if (!deser_result) {
+        std::cerr << "Couldn't find entity deserialisation routine.\n";
+        return;
+    }
+
+    auto deserialisation_bounds = find_function_bounds(noita, deser_result.ptr);
+    np::deserialise_entity_func = deserialisation_bounds.start;
+    std::cout << "np::deserialise_entity_func: " << np::deserialise_entity_func << '\n';
 }
 
 lua_CFunction GetUpdatedEntityID_original;
@@ -678,6 +725,8 @@ static const luaL_Reg nplib[] = {
     {"EnableExtendedLogging", EnableExtendedLogging},
     {"EnableLogFiltering", EnableLogFiltering},
     {"ComponentUpdatesSetEnabled", ComponentUpdatesSetEnabled},
+    {"SerializeEntity", np::SerializeEntity},
+    {"DeserializeEntity", np::DeserializeEntity},
     {},
 };
 
@@ -698,6 +747,7 @@ int luaopen_noitapatcher(lua_State* L)
     std::cout << "luaopen_noitapatcher " << L << '\n';
 
     if (!np_initialised) {
+        vs13::initialise();
         MH_Initialize();
 
         find_entity_funcs();
@@ -705,6 +755,7 @@ int luaopen_noitapatcher(lua_State* L)
         find_use_item();
         find_duplicate_pixel_scene_check();
         find_system_manager();
+        find_entity_serialisation();
 
         auto lua_lib = LoadLibraryA("lua51.dll");
         auto newstate_func = (void*)GetProcAddress(lua_lib, "luaL_newstate");
