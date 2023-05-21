@@ -2,22 +2,70 @@
 #define NP_VS13_STRING_HPP
 
 #include <cstdint>
+#include <cstring>
 #include <string_view>
 #include <utility>
+
+#include <vs2013/memory.hpp>
 
 namespace vs13 {
 
 struct string {
-    const char* buffer;
-    char sso_buffer[12];
-    std::size_t size_;
-    std::size_t capacity_;
+    char* buffer = nullptr;
+    char sso_buffer[12]{};
+    std::size_t size_ = 0;
+    std::size_t capacity_ = 15;
 
-    ~string() = delete;
+    string() = default;
 
-    bool is_sso() const
+    string(const char* str, std::size_t length)
     {
-        return capacity() < 0x10;
+        if (length > 15) {
+            buffer = (char*)vs13::operator_new(length + 1);
+            capacity_ = length;
+        }
+
+        std::memcpy(data(), str, length);
+        data()[length] = '\0';
+        size_ = length;
+    }
+
+    void resize(std::size_t new_size)
+    {
+        auto old_size = size();
+        auto old_capacity = capacity();
+
+        if (old_size >= new_size) {
+            // Reducing in size
+            size_ = new_size;
+            data()[new_size] = '\0';
+            return;
+        }
+
+        if (old_capacity >= new_size) {
+            // Increasing in size but not capacity
+            std::memset(data() + old_size, 0, new_size - old_size + 1);
+            size_ = new_size;
+            return;
+        }
+
+        // Increasing in capacity and size
+        auto new_buffer = (char*)vs13::operator_new(new_size + 1);
+        std::memcpy(new_buffer, data(), old_size);
+        std::memset(new_buffer + old_size, 0, new_size - old_size + 1);
+
+        if (!is_sso())
+            vs13::operator_delete(buffer);
+
+        buffer = new_buffer;
+        size_ = new_size;
+        capacity_ = new_size;
+    }
+
+    ~string()
+    {
+        if (!is_sso())
+            vs13::operator_delete(buffer);
     }
 
     const char* c_str() const
@@ -42,6 +90,12 @@ struct string {
 
     char& operator[](std::size_t i) { return data()[i]; }
     const char& operator[](std::size_t i) const { return data()[i]; }
+
+private:
+    bool is_sso() const
+    {
+        return capacity() < 0x10;
+    }
 };
 
 } // vs13::
