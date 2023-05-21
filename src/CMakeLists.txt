@@ -21,6 +21,7 @@ add_library(noitapatcher MODULE
     lua_util.cpp
     extended_logs.cpp
     iat_hook.cpp
+    serializer.cpp
     damage_detail.cpp
     global_extensions.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
