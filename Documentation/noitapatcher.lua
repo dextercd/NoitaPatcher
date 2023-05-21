@@ -85,4 +85,17 @@ function noitapatcher.EnableExtendedLogging(enable) end
 ---@param enable boolean enable or disable
 function noitapatcher.EnableLogFiltering(enable) end
 
+---Serialize an entity
+---@param entity_id integer
+---@return string serialized_data
+function noitapatcher.SerializeEntity(entity_id) end
+
+---Deserialize an entity. If x and y are provided then the entity's position is changed to that instead of using the position info in the serialized data.
+---@param entity_id integer Entity to deserialize into, most of the time you want this to be an "empty" entity.
+---@param serialized_data string The serialized data
+---@param x number? Position to force the entity to if provided
+---@param y number? Position to force the entity to if provided
+---@return integer? entity_id The entity_id passed into the function if deserialization was successful.
+function noitapatcher.DeserializeEntity(entity_id, serialized_data, x, y) end
+
 return noitapatcher
