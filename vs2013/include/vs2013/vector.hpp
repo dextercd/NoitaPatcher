@@ -1,7 +1,7 @@
 #ifndef NP_VS13_VECTOR_HPP
 #define NP_VS13_VECTOR_HPP
 
-#include <cstdint>
+#include <cstddef>
 
 namespace vs13 {
 

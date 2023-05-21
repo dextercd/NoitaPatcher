@@ -1,7 +1,7 @@
 #ifndef NP_VS13_MEMORY_HPP
 #define NP_VS13_MEMORY_HPP
 
-#include <cstdint>
+#include <cstddef>
 
 namespace vs13 {
 
