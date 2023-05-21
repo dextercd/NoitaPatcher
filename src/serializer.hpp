@@ -15,18 +15,18 @@ public:
     virtual bool IsSaving() const = 0;
     virtual bool IsLoading() const { return !IsSaving(); }
     virtual bool HasOverflowed() const = 0;
-    virtual void IO(vs13::string& value) = 0;
-    virtual void IO(bool& value) = 0;
-    virtual void IO(double& value) = 0;
-    virtual void IO(float& value) = 0;
-    virtual void IO(std::int64_t& value) = 0;
-    virtual void IO(std::uint64_t& value) = 0;
-    virtual void IO(std::int32_t& value) = 0;
-    virtual void IO(std::uint32_t& value) = 0;
-    virtual void IO(std::int16_t& value) = 0;
-    virtual void IO(std::uint16_t& value) = 0;
-    virtual void IO(std::int8_t& value) = 0;
-    virtual void IO(std::uint8_t& value) = 0;
+    virtual void sIO(vs13::string& value) = 0;
+    virtual void bIO(bool& value) = 0;
+    virtual void dIO(double& value) = 0;
+    virtual void fIO(float& value) = 0;
+    virtual void i64IO(std::int64_t& value) = 0;
+    virtual void u64IO(std::uint64_t& value) = 0;
+    virtual void i32IO(std::int32_t& value) = 0;
+    virtual void u32IO(std::uint32_t& value) = 0;
+    virtual void i16IO(std::int16_t& value) = 0;
+    virtual void u16IO(std::uint16_t& value) = 0;
+    virtual void i8IO(std::int8_t& value) = 0;
+    virtual void u8IO(std::uint8_t& value) = 0;
 };
 
 class SerialSaver final : public Serializer {
@@ -40,18 +40,18 @@ public:
     bool IsSaving() const override;
     bool IsLoading() const { return !IsSaving(); }
     bool HasOverflowed() const override;
-    void IO(vs13::string& value) override;
-    void IO(bool& value) override;
-    void IO(double& value) override;
-    void IO(float& value) override;
-    void IO(std::int64_t& value) override;
-    void IO(std::uint64_t& value) override;
-    void IO(std::int32_t& value) override;
-    void IO(std::uint32_t& value) override;
-    void IO(std::int16_t& value) override;
-    void IO(std::uint16_t& value) override;
-    void IO(std::int8_t& value) override;
-    void IO(std::uint8_t& value) override;
+    void sIO(vs13::string& value) override;
+    void bIO(bool& value) override;
+    void dIO(double& value) override;
+    void fIO(float& value) override;
+    void i64IO(std::int64_t& value) override;
+    void u64IO(std::uint64_t& value) override;
+    void i32IO(std::int32_t& value) override;
+    void u32IO(std::uint32_t& value) override;
+    void i16IO(std::int16_t& value) override;
+    void u16IO(std::uint16_t& value) override;
+    void i8IO(std::int8_t& value) override;
+    void u8IO(std::uint8_t& value) override;
 };
 
 class SerialLoader final : public Serializer {
@@ -75,18 +75,18 @@ public:
     bool IsSaving() const override;
     bool IsLoading() const { return !IsSaving(); }
     bool HasOverflowed() const override;
-    void IO(vs13::string& value) override;
-    void IO(bool& value) override;
-    void IO(double& value) override;
-    void IO(float& value) override;
-    void IO(std::int64_t& value) override;
-    void IO(std::uint64_t& value) override;
-    void IO(std::int32_t& value) override;
-    void IO(std::uint32_t& value) override;
-    void IO(std::int16_t& value) override;
-    void IO(std::uint16_t& value) override;
-    void IO(std::int8_t& value) override;
-    void IO(std::uint8_t& value) override;
+    void sIO(vs13::string& value) override;
+    void bIO(bool& value) override;
+    void dIO(double& value) override;
+    void fIO(float& value) override;
+    void i64IO(std::int64_t& value) override;
+    void u64IO(std::uint64_t& value) override;
+    void i32IO(std::int32_t& value) override;
+    void u32IO(std::uint32_t& value) override;
+    void i16IO(std::int16_t& value) override;
+    void u16IO(std::uint16_t& value) override;
+    void i8IO(std::int8_t& value) override;
+    void u8IO(std::uint8_t& value) override;
 };
 
 #endif // Header guard

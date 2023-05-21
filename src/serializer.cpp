@@ -27,43 +27,43 @@ std::uint8_t* SerialSaver::write_space(std::size_t length)
     return (std::uint8_t*)(buffer.data() + write_offset);
 }
 
-void SerialSaver::IO(vs13::string& value)
+void SerialSaver::sIO(vs13::string& value)
 {
     auto sz = (std::uint32_t)value.size();
-    IO(sz);
+    u32IO(sz);
 
     std::memcpy(write_space(value.size()), value.c_str(), value.size());
 }
 
-void SerialSaver::IO(bool& value)
+void SerialSaver::bIO(bool& value)
 {
     auto w = (std::uint8_t)value;
-    IO(w);
+    u8IO(w);
 }
 
-void SerialSaver::IO(double& value)
+void SerialSaver::dIO(double& value)
 {
     static_assert(sizeof(double) == sizeof(std::uint64_t));
     std::uint64_t to_write;
     std::memcpy(&to_write, &value, sizeof(to_write));
-    IO(to_write);
+    u64IO(to_write);
 }
 
-void SerialSaver::IO(float& value)
+void SerialSaver::fIO(float& value)
 {
     static_assert(sizeof(float) == sizeof(std::uint32_t));
     std::uint32_t to_write;
     std::memcpy(&to_write, &value, sizeof(to_write));
-    IO(to_write);
+    u32IO(to_write);
 }
 
-void SerialSaver::IO(std::int64_t& value)
+void SerialSaver::i64IO(std::int64_t& value)
 {
     auto w = (std::uint64_t)value;
-    IO(w);
+    u64IO(w);
 }
 
-void SerialSaver::IO(std::uint64_t& value)
+void SerialSaver::u64IO(std::uint64_t& value)
 {
     auto w = write_space(8);
     w[0] = value >> 56;
@@ -76,13 +76,13 @@ void SerialSaver::IO(std::uint64_t& value)
     w[7] = value;
 }
 
-void SerialSaver::IO(std::int32_t& value)
+void SerialSaver::i32IO(std::int32_t& value)
 {
     auto w = (std::uint32_t)value;
-    IO(w);
+    u32IO(w);
 }
 
-void SerialSaver::IO(std::uint32_t& value)
+void SerialSaver::u32IO(std::uint32_t& value)
 {
     auto w = write_space(4);
     w[0] = value >> 24;
@@ -91,26 +91,26 @@ void SerialSaver::IO(std::uint32_t& value)
     w[3] = value;
 }
 
-void SerialSaver::IO(std::int16_t& value)
+void SerialSaver::i16IO(std::int16_t& value)
 {
     auto w = (std::uint16_t)value;
-    IO(w);
+    u16IO(w);
 }
 
-void SerialSaver::IO(std::uint16_t& value)
+void SerialSaver::u16IO(std::uint16_t& value)
 {
     auto w = write_space(2);
     w[0] = value >> 8;
     w[1] = value;
 }
 
-void SerialSaver::IO(std::int8_t& value)
+void SerialSaver::i8IO(std::int8_t& value)
 {
     auto w = (std::uint8_t)value;
-    IO(w);
+    u8IO(w);
 }
 
-void SerialSaver::IO(std::uint8_t& value)
+void SerialSaver::u8IO(std::uint8_t& value)
 {
     write_space(1)[0] = value;
 }
@@ -145,10 +145,10 @@ std::uint8_t* SerialLoader::read_space(std::size_t length)
     return nullptr;
 }
 
-void SerialLoader::IO(vs13::string& value)
+void SerialLoader::sIO(vs13::string& value)
 {
     std::uint32_t size = -1;
-    IO(size);
+    u32IO(size);
 
     auto read = read_space(size);
     if (!read)
@@ -158,7 +158,7 @@ void SerialLoader::IO(vs13::string& value)
     std::memcpy(value.data(), read, value.size());
 }
 
-void SerialLoader::IO(bool& value)
+void SerialLoader::bIO(bool& value)
 {
     auto read = read_space(1);
     if (!read)
@@ -167,32 +167,32 @@ void SerialLoader::IO(bool& value)
     value = read[0] != 0;
 }
 
-void SerialLoader::IO(double& value)
+void SerialLoader::dIO(double& value)
 {
     static_assert(sizeof(double) == sizeof(std::uint64_t));
     std::uint64_t to_read;
-    IO(to_read);
+    u64IO(to_read);
 
     if (!HasOverflowed())
         std::memcpy(&value, &to_read, sizeof(value));
 }
 
-void SerialLoader::IO(float& value)
+void SerialLoader::fIO(float& value)
 {
     static_assert(sizeof(float) == sizeof(std::uint32_t));
     std::uint32_t to_read;
-    IO(to_read);
+    u32IO(to_read);
 
     if (!HasOverflowed())
         std::memcpy(&value, &to_read, sizeof(value));
 }
 
-void SerialLoader::IO(std::int64_t& value)
+void SerialLoader::i64IO(std::int64_t& value)
 {
-    IO((std::uint64_t&)value);
+    u64IO((std::uint64_t&)value);
 }
 
-void SerialLoader::IO(std::uint64_t& value)
+void SerialLoader::u64IO(std::uint64_t& value)
 {
     auto r = read_space(8);
     if (!r)
@@ -208,12 +208,12 @@ void SerialLoader::IO(std::uint64_t& value)
           | (std::uint64_t)r[7];
 }
 
-void SerialLoader::IO(std::int32_t& value)
+void SerialLoader::i32IO(std::int32_t& value)
 {
-    IO((std::uint32_t&)value);
+    u32IO((std::uint32_t&)value);
 }
 
-void SerialLoader::IO(std::uint32_t& value)
+void SerialLoader::u32IO(std::uint32_t& value)
 {
     auto r = read_space(4);
     if (!r)
@@ -225,12 +225,12 @@ void SerialLoader::IO(std::uint32_t& value)
           | (std::uint32_t)r[3];
 }
 
-void SerialLoader::IO(std::int16_t& value)
+void SerialLoader::i16IO(std::int16_t& value)
 {
-    IO((std::uint16_t&)value);
+    u16IO((std::uint16_t&)value);
 }
 
-void SerialLoader::IO(std::uint16_t& value)
+void SerialLoader::u16IO(std::uint16_t& value)
 {
     auto r = read_space(2);
     if (!r)
@@ -240,12 +240,12 @@ void SerialLoader::IO(std::uint16_t& value)
           | (std::uint16_t)r[1];
 }
 
-void SerialLoader::IO(std::int8_t& value)
+void SerialLoader::i8IO(std::int8_t& value)
 {
-    IO((std::uint8_t&)value);
+    u8IO((std::uint8_t&)value);
 }
 
-void SerialLoader::IO(std::uint8_t& value)
+void SerialLoader::u8IO(std::uint8_t& value)
 {
     auto r = read_space(1);
     if (!r)
