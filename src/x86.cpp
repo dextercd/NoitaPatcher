@@ -49,13 +49,19 @@ const void* find_function_end(const void* func_body)
             (it[-1] >= 0x58 && it[-1] < 0x60) && // Pop register
             (it[0] == 0xc3 || it[0] == 0xc2)     // Ret (N)
         ) {
+            auto next_instruction = it[0] == 0xc3 ? it + 1 : it + 3;
+            return next_instruction;
+
+            // Sometimes error handling/throwing is placed after the return, so
+            // this "check for next function" logic doesn't work.
+
+            /*
             // If this is really the return instruction, then the next function
             // should come right after this.  The function should be aligned to
             // a 16 byte boundary with 0 or more preceding padding bytes (0xcc).
             //
             // It doesn't make sense for there to be a padding byte on an
             // alignment point.
-            auto next_instruction = it[0] == 0xc3 ? it + 1 : it + 3;
             for (
                 auto seek_align = next_instruction;
                 (*seek_align == 0xcc) != ((std::uintptr_t)seek_align % 16 == 0);
@@ -63,7 +69,7 @@ const void* find_function_end(const void* func_body)
             ) {
                 if ((std::uintptr_t)seek_align % 16 == 0)
                     return next_instruction; // Return one past the end pointer
-            }
+            } */
         }
     }
 }
