@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include "noita.hpp"
+#include "calling_convention.hpp"
 
 #include "serializer.hpp"
 
@@ -23,12 +24,12 @@ int SerializeEntity(lua_State* L)
         return 0;
 
     auto func = reinterpret_cast<serialise_entity_function_t>(serialise_entity_func);
-    //auto func = reinterpret_cast<void(__fastcall*)(Entity*, SerialSaver*)>(0x0095c2d0);
 
     int entity_id = luaL_checkinteger(L, 1);
     auto entity = entity_get_by_id(entity_manager, entity_id);
 
     SerialSaver saver;
+
     func(entity, &saver);
 
     lua_pushlstring(L, saver.buffer.c_str(), saver.buffer.size());
@@ -41,7 +42,6 @@ int DeserializeEntity(lua_State* L)
         return 0;
 
     auto func = reinterpret_cast<deserialise_entity_function_t>(deserialise_entity_func);
-    //auto func = reinterpret_cast<void(__fastcall*)(Entity*, SerialLoader*, const vec2*)>(0x0095c700);
 
     int entity_id = luaL_checkinteger(L, 1);
     auto entity = entity_get_by_id(entity_manager, entity_id);
@@ -70,6 +70,7 @@ int DeserializeEntity(lua_State* L)
 
     SerialLoader loader{serialized_data, serialized_length};
     func(entity, &loader, has_position);
+    STACK_ADJUST(4);
 
     // Return the entity to support:
     // local ent = np.DeserializeEntity(EntityCreateNew(), s)
