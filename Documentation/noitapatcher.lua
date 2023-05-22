@@ -118,6 +118,6 @@ function noitapatcher.PhysBodySetTransform(component_id, x, y, r, vx, vy, av) en
 ---@return number box2d x velocity
 ---@return number box2d y velocity
 ---@return number box2d angular velocity
-function noitapatcher.PhysBodySetTransform(component_id, x, y, r, vx, vy, av) end
+function noitapatcher.PhysBodyGetTransform(component_id) end
 
 return noitapatcher
