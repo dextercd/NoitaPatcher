@@ -87,6 +87,7 @@ function noitapatcher.EnableLogFiltering(enable) end
 
 ---Serialize an entity
 ---@param entity_id integer
+---@nodiscard
 ---@return string serialized_data
 function noitapatcher.SerializeEntity(entity_id) end
 
@@ -97,5 +98,26 @@ function noitapatcher.SerializeEntity(entity_id) end
 ---@param y number? Position to force the entity to if provided
 ---@return integer? entity_id The entity_id passed into the function if deserialization was successful.
 function noitapatcher.DeserializeEntity(entity_id, serialized_data, x, y) end
+
+---Set box2d parameters of a PhysicsBody(2)Component
+---@param component_id integer The PhysicsBody(2)Component
+---@param x number box2d x coordinate
+---@param y number box2d y coordinate
+---@param r number box2d rotation
+---@param vx number box2d x velocity
+---@param vy number box2d y velocity
+---@param av number box2d angular velocity
+function noitapatcher.PhysBodySetTransform(component_id, x, y, r, vx, vy, av) end
+
+---Get the box2d parameters of a PhysicsBody(2)Component
+---@param component_id integer The PhysicsBody(2)Component
+---@nodiscard
+---@return number box2d x coordinate
+---@return number box2d y coordinate
+---@return number box2d rotation
+---@return number box2d x velocity
+---@return number box2d y velocity
+---@return number box2d angular velocity
+function noitapatcher.PhysBodySetTransform(component_id, x, y, r, vx, vy, av) end
 
 return noitapatcher

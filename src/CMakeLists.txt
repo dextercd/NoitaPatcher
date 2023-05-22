@@ -25,6 +25,7 @@ add_library(noitapatcher MODULE
     damage_detail.cpp
     global_extensions.cpp
     entity_serialisation.cpp
+    physics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 

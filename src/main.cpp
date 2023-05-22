@@ -14,17 +14,19 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include "lua_util.hpp"
-#include "executable_info.hpp"
-#include "noita.hpp"
-#include "x86.hpp"
-#include "memory_pattern.hpp"
-#include "game_pause.hpp"
-#include "extended_logs.hpp"
-#include "damage_detail.hpp"
 #include "calling_convention.hpp"
-#include "global_extensions.hpp"
+#include "components.hpp"
+#include "damage_detail.hpp"
 #include "entity_serialisation.hpp"
+#include "executable_info.hpp"
+#include "extended_logs.hpp"
+#include "game_pause.hpp"
+#include "global_extensions.hpp"
+#include "lua_util.hpp"
+#include "memory_pattern.hpp"
+#include "noita.hpp"
+#include "physics.hpp"
+#include "x86.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -49,6 +51,10 @@ void* duplicate_pixel_scene_check = nullptr;
 
 DeathMatch* g_deathmatch;
 SystemManager* system_manager;
+
+namespace np {
+np::get_component_by_id_t get_component_by_id;
+}
 
 
 FireWandInfo find_fire_wand()
@@ -251,6 +257,28 @@ void find_entity_funcs()
         noita.text_start, (std::uint8_t*)set_active_result.ptr,
         std::begin(function_intro), std::end(function_intro)
     );
+}
+
+void find_component_funcs()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto search_in_func =
+        get_lua_c_binding(current_lua_state, "ComponentGetValue2");
+
+    auto pattern = make_pattern(
+        Bytes{0xe8}, Capture{"get_component_by_id", 4},
+        Bytes{0x8b, 0x00},
+        Bytes{0x3b, 0x05}, Pad{4}
+    );
+
+    auto result = pattern.search(noita, (void*)search_in_func, (char*)search_in_func + 1024);
+    if (!result) {
+        std::cerr << "Couldn't find get component by id func.\n";
+        return;
+    }
+
+    np::get_component_by_id = (np::get_component_by_id_t)result.get_rela_call("get_component_by_id");
+
 }
 
 void find_deathmatch()
@@ -727,6 +755,8 @@ static const luaL_Reg nplib[] = {
     {"ComponentUpdatesSetEnabled", ComponentUpdatesSetEnabled},
     {"SerializeEntity", np::SerializeEntity},
     {"DeserializeEntity", np::DeserializeEntity},
+    {"PhysBodySetTransform", np::PhysBodySetTransform},
+    {"PhysBodyGetTransform", np::PhysBodyGetTransform},
     {},
 };
 
@@ -746,11 +776,23 @@ int luaopen_noitapatcher(lua_State* L)
 {
     std::cout << "luaopen_noitapatcher " << L << '\n';
 
+    // Detect module unload
+    lua_newuserdata(L, 0);
+    lua_newtable(L);
+    lua_pushcclosure(L, luaclose_noitapatcher, 0);
+    lua_setfield(L, -2, "__gc");
+    lua_setmetatable(L, -2);
+    lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
+
+    current_lua_state = L;
+    luaL_register(L, "noitapatcher", nplib);
+
     if (!np_initialised) {
         vs13::initialise();
         MH_Initialize();
 
         find_entity_funcs();
+        find_component_funcs();
         find_deathmatch();
         find_use_item();
         find_duplicate_pixel_scene_check();
@@ -768,17 +810,6 @@ int luaopen_noitapatcher(lua_State* L)
 
         np_initialised = true;
     }
-
-    // Detect module unload
-    lua_newuserdata(L, 0);
-    lua_newtable(L);
-    lua_pushcclosure(L, luaclose_noitapatcher, 0);
-    lua_setfield(L, -2, "__gc");
-    lua_setmetatable(L, -2);
-    lua_setfield(L, LUA_REGISTRYINDEX, "luaclose_noitapatcher");
-
-    current_lua_state = L;
-    luaL_register(L, "noitapatcher", nplib);
 
     return 1;
 }
