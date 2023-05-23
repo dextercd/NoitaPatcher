@@ -37,8 +37,7 @@ jobs:
             -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src ^
             -DNOITAPATCHER_DOCS=ON
 
-          cmake --build build --config Release && ^
-          cmake --build build --config Debug
+          cmake --build build --config Release
 
       - name: Run CPack
         shell: cmd
