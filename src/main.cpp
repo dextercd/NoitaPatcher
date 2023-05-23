@@ -161,14 +161,9 @@ void __cdecl fire_wand_hook(
         send_message,
         target_x, target_y
     );
+    STACK_ADJUST(0x20);
 
     do_callback("OnProjectileFiredPost");
-
-    #ifdef __GNUC__
-    asm("add $0x20, %esp");
-    #else
-    __asm { add esp, 0x20 }
-    #endif
 }
 
 void __stdcall ps_damage_message_handler_hook(
