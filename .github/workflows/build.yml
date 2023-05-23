@@ -35,7 +35,8 @@ jobs:
           cmake -S . -B build -G "Ninja" ^
             -DCMAKE_CXX_FLAGS="/D_WIN32_WINNT=0x0601 /DWINVER=0x0601 /DWIN32 /D_WINDOWS /EHsc /MD" ^
             -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src ^
-            -DNOITAPATCHER_DOCS=ON
+            -DNOITAPATCHER_DOCS=ON ^
+            -DCMAKE_BUILD_TYPE=Release
 
           cmake --build build
 
