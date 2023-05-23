@@ -32,19 +32,19 @@ jobs:
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86 10.0.22000.0 -vcvars_ver=14
           call ".\venv\Scripts\activate.bat"
           mkdir build
-          cmake -S . -B build -G "Ninja Multi-Config" ^
+          cmake -S . -B build -G "Ninja" ^
             -DCMAKE_CXX_FLAGS="/D_WIN32_WINNT=0x0601 /DWINVER=0x0601 /DWIN32 /D_WINDOWS /EHsc /MD" ^
             -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src ^
             -DNOITAPATCHER_DOCS=ON
 
-          cmake --build build --config Release
+          cmake --build build
 
       - name: Run CPack
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86 10.0.22000.0 -vcvars_ver=14
           cd build
-          cpack -C "Release"
+          cpack
 
       - name: Upload build zip
         uses: actions/upload-artifact@v3
