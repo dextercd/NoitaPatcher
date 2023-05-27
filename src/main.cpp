@@ -21,6 +21,7 @@ extern "C" {
 #include "executable_info.hpp"
 #include "extended_logs.hpp"
 #include "game_pause.hpp"
+#include "game_mode.hpp"
 #include "global_extensions.hpp"
 #include "lua_util.hpp"
 #include "memory_pattern.hpp"
@@ -386,6 +387,35 @@ void find_entity_serialisation()
     std::cout << "np::deserialise_entity_func: " << np::deserialise_entity_func << '\n';
 }
 
+void find_game_mode()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto search_in_func =
+        get_lua_c_binding(current_lua_state, "GameIsModeFullyDeterministic");
+
+    auto pattern = make_pattern(
+        Bytes{0xa1}, Capture{"game_mode_nr", 4},
+        Bytes{0x8d, 0x0c, 0x40},
+        Bytes{0xa1}, Capture{"game_modes_begin", 4},
+        Bytes{0xc1, 0xe1, 0x06},
+        Bytes{0x03, 0xc1},
+        Bytes{0x83, 0x78, 0x64, 0x01}
+    );
+
+    auto result = pattern.search(noita, (void*)search_in_func, (char*)search_in_func + 0x300);
+    if (!result) {
+        std::cerr << "Couldn't find game mode items.\n";
+        return;
+    }
+
+    np::game_mode_nr = result.get<int*>("game_mode_nr");
+    np::game_modes_begin = result.get<void*>("game_modes_begin");
+
+    std::cout << "Found game mode items: " << '\n';
+    std::cout << "  game_mode_nr: " << np::game_mode_nr << '\n';
+    std::cout << "  game_modes_begin: " << np::game_modes_begin << '\n';
+}
+
 lua_CFunction GetUpdatedEntityID_original;
 
 int GetUpdatedEntityID_hook(lua_State* L)
@@ -741,6 +771,7 @@ static const luaL_Reg nplib[] = {
     {"DeserializeEntity", np::DeserializeEntity},
     {"PhysBodySetTransform", np::PhysBodySetTransform},
     {"PhysBodyGetTransform", np::PhysBodyGetTransform},
+    {"SetGameModeDeterministic", np::SetGameModeDeterministic},
     {},
 };
 
@@ -777,6 +808,7 @@ int luaopen_noitapatcher(lua_State* L)
 
         find_entity_funcs();
         find_component_funcs();
+        find_game_mode();
         find_deathmatch();
         find_use_item();
         find_duplicate_pixel_scene_check();

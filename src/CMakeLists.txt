@@ -26,6 +26,7 @@ add_library(noitapatcher MODULE
     global_extensions.cpp
     entity_serialisation.cpp
     physics.cpp
+    game_mode.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
