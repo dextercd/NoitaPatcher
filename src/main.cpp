@@ -62,37 +62,26 @@ FireWandInfo find_fire_wand()
     FireWandInfo ret{};
     executable_info noita = ThisExecutableInfo::get();
 
-    const std::uint8_t fire_wand_bytes[] {
-        0x80, 0xbf, 0xc0, 0x02, 0x00, 0x00, 0x00, 0x0f, 0x84,
-    };
-
-    const std::uint8_t fire_wand_bytes_dev[] {
-        0x80, 0xbf, 0xc8, 0x02, 0x00, 0x00, 0x00, 0x0f, 0x84,
-    };
-
-    // Location of a cmp instruction in the fire wand function
-    auto fire_wand_cmp = std::search(
-        noita.text_start, noita.text_end,
-        std::begin(fire_wand_bytes), std::end(fire_wand_bytes)
+    auto pattern = make_pattern(
+        Bytes{0x80, 0xbf},
+        Pad{2},
+        Bytes{0x00, 0x00, 0x00, 0x0f, 0x84},
+        Pad{4},
+        Bytes{0x69, 0x0d},
+        Capture{"rng", 4},
+        Bytes{0xfd, 0x43, 0x03, 0x00}
     );
 
-    if (fire_wand_cmp == noita.text_end) {
-        fire_wand_cmp = std::search(
-            noita.text_start, noita.text_end,
-            std::begin(fire_wand_bytes_dev), std::end(fire_wand_bytes_dev)
-        );
-
-        if (fire_wand_cmp == noita.text_end) {
-            std::cerr << "Couldn't find fire wand function.\n";
-            return ret;
-        }
+    auto result = pattern.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find fire wand function.\n";
+        return ret;
     }
 
-    ret.rng = *(std::uint32_t**)(fire_wand_cmp + 15);
-    ret.func = (fire_wand_function_t)std::find_end(
-        noita.text_start, fire_wand_cmp,
-        std::begin(function_intro), std::end(function_intro)
-    );
+    auto bounds = find_function_bounds(noita, result.ptr);
+
+    ret.rng = result.get<std::uint32_t*>("rng");
+    ret.func = (fire_wand_function_t)bounds.start;
 
     return ret;
 }
