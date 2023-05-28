@@ -74,7 +74,7 @@ function noitapatcher.SilenceLogs(logstr) end
 ---@param skip_biome_checks bool Defaults to false
 ---@param skip_edge_textures bool Defaults to false
 ---@param color_to_material_table table Defaults to {}
----@param background_z_index int Defaults to 50 
+---@param background_z_index int Defaults to 50
 function noitapatcher.ForceLoadPixelScene(materials_filename, colors_filename, x, y, background_file, skip_biome_checks, skip_edge_textures, color_to_material_table, background_z_index) end
 
 ---Enable source location logging

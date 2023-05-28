@@ -20,7 +20,7 @@ int PhysBodySetTransform(lua_State* L)
     }
 
     auto b2body = *(char**)((char*)component + 0x48);
-    
+
     *(double*)(b2body + 0x58) = x;
     *(double*)(b2body + 0x60) = y;
     *(double*)(b2body + 0x70) = r;
@@ -41,7 +41,7 @@ int PhysBodyGetTransform(lua_State* L)
     }
 
     auto b2body = *(char**)((char*)component + 0x48);
-    
+
     lua_pushnumber(L, *(double*)(b2body + 0x58)); // x
     lua_pushnumber(L, *(double*)(b2body + 0x60)); // y
     lua_pushnumber(L, *(double*)(b2body + 0x70)); // r
