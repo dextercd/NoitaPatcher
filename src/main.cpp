@@ -703,36 +703,36 @@ int EnableLogFiltering(lua_State* L)
     return 0;
 }
 
-std::unordered_map<std::string, void*> disabled_components;
+std::unordered_map<std::string, void*> disabled_systems;
 
 void __stdcall disable_updates(void*) {}
 
 int ComponentUpdatesSetEnabled(lua_State* L)
 {
-    auto component_ = ulua_checkstringview(L, 1);
+    auto system_name_ = ulua_checkstringview(L, 1);
     bool change_to = lua_toboolean(L, 2);
 
-    std::string component{component_};
+    std::string system_name{system_name_};
 
-    auto current = disabled_components.find(component) == std::end(disabled_components);
+    auto current = disabled_systems.find(system_name) == std::end(disabled_systems);
 
     if (current == change_to) {
         lua_pushboolean(L, true);
         return 1;
     }
 
-    std::string search = "class " + component;
+    std::string search = "class " + system_name;
 
     for (auto&& system : system_manager->mSystems) {
         if (system->vtable->get_system_name(system).as_view() == search) {
             auto address = (void**)&system->vtable->update_components;
             void* value_to_write{};
             if (change_to) {
-                value_to_write = disabled_components[component];
-                disabled_components.erase(component);
+                value_to_write = disabled_systems[system_name];
+                disabled_systems.erase(system_name);
             } else {
                 value_to_write = (void*)disable_updates;
-                disabled_components[component] = *address;
+                disabled_systems[system_name] = *address;
             }
 
             DWORD prot_restore;
