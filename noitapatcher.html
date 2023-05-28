@@ -45,6 +45,17 @@
 </dd></dl>
 
 <dl class="lua function">
+<dt class="sig sig-object lua" id="noitapatcher.InstallDamageDetailsPatch">
+<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">InstallDamageDetailsPatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.InstallDamageDetailsPatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables GetDamageDetails in newly created Lua states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">nil</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua function">
 <dt class="sig sig-object lua" id="noitapatcher.SetProjectileSpreadRNG">
 <em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">SetProjectileSpreadRNG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rng_value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.SetProjectileSpreadRNG" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets Noita’s internal RNG state to the specified value.</p>
@@ -225,6 +236,26 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 </dd></dl>
 
 <dl class="lua function">
+<dt class="sig sig-object lua" id="noitapatcher.ComponentUpdatesSetEnabled">
+<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">ComponentUpdatesSetEnabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">system_name</span></em>, <em class="sig-param"><span class="pre">change_to</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.ComponentUpdatesSetEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable system updates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system_name</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the system to disable, for instance BlackHoleSystem</p></li>
+<li><p><strong>change_to</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – enable (true) or disable (false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>change_succeeded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua function">
 <dt class="sig sig-object lua" id="noitapatcher.SerializeEntity">
 <em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">SerializeEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entity_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.SerializeEntity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Serialize an entity</p>
@@ -325,6 +356,17 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua function">
+<dt class="sig sig-object lua" id="noitapatcher.SetGameModeDeterministic">
+<em class="property"> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">SetGameModeDeterministic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">deterministic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.SetGameModeDeterministic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark the current game mode as a daily. Disables spell progress and if called during mod init makes all spells available for the run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deterministic</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – </p>
 </dd>
 </dl>
 </dd></dl>
