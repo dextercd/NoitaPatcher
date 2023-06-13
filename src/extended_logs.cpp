@@ -125,7 +125,7 @@ int print_hook(lua_State* L)
 
 int enhanced_pcall_error_handler(lua_State* L)
 {
-    auto stack_trace = get_stack_trace(L, 1);
+    auto stack_trace = get_stack_trace(L, 2);
 
     std::string textual_stack = lua_tostring(L, 1);
     for (auto& stack : stack_trace) {
