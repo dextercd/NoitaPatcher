@@ -136,6 +136,10 @@ int enhanced_pcall_error_handler(lua_State* L)
             std::to_string(stack.line_number);
     }
 
+    if (np::filter_pcall_errors) {
+        filter_log(stack_trace.back(), {textual_stack});;
+    }
+
     lua_pushstring(L, textual_stack.c_str());
 
     return 1;
@@ -161,8 +165,7 @@ int enhanced_pcall(lua_State* L, int nargs, int nresults, int errfunc)
 namespace np {
 
 bool do_log_filtering = false;
-
-
+bool filter_pcall_errors = false;
 
 void enable_extended_logging_hook(const executable_info& exe, lua_State* L)
 {

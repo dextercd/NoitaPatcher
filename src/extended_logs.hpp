@@ -14,6 +14,7 @@ void enable_extended_logging_hook(const executable_info& exe, lua_State* L);
 void disable_extended_logging_hook();
 
 extern bool do_log_filtering;
+extern bool filter_pcall_errors;
 
 }
 

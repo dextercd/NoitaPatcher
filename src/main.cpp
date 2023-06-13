@@ -703,6 +703,12 @@ int EnableLogFiltering(lua_State* L)
     return 0;
 }
 
+int EnablePCallErrorFilter(lua_State* L)
+{
+    np::filter_pcall_errors = lua_toboolean(L, 1);
+    return 0;
+}
+
 std::unordered_map<std::string, void*> disabled_systems;
 
 void __stdcall disable_updates(void*) {}
@@ -766,6 +772,7 @@ static const luaL_Reg nplib[] = {
     {"ForceLoadPixelScene", ForceLoadPixelScene},
     {"EnableExtendedLogging", EnableExtendedLogging},
     {"EnableLogFiltering", EnableLogFiltering},
+    {"EnablePCallErrorFilter", EnablePCallErrorFilter},
     {"ComponentUpdatesSetEnabled", ComponentUpdatesSetEnabled},
     {"SerializeEntity", np::SerializeEntity},
     {"DeserializeEntity", np::DeserializeEntity},
