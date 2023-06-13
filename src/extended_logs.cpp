@@ -60,6 +60,7 @@ struct LoggingHooksCreator {
             (void**)&original_print_func
         );
 
+        pcall_hook.enable();
         MH_EnableHook((void*)print_func);
     }
 
