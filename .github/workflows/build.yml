@@ -38,7 +38,7 @@ jobs:
             -DNOITAPATCHER_DOCS=ON ^
             -DCMAKE_BUILD_TYPE=Release
 
-          cmake --build build
+          cmake --build build --verbose
 
       - name: Run CPack
         shell: cmd
