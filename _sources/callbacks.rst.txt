@@ -42,7 +42,7 @@ To use `OnProjectileFired` and `OnProjectileFiredPost` you must call
     This causes things like the 'shot' Lua callback to be called.
    :type send_message: boolean
 
-   :param unknown1: 4 byte integer. Unknown what this is for.
+   :param unknown1: 4 byte integer. Unknown what this is for. Maybe recursion_level
    :type unknown1: integer
 
    :param multicast_index: What number projectile is this in a multi-cast. -1 if multi-casts doesn't make sense.
