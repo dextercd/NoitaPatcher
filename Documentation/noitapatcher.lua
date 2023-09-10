@@ -130,7 +130,7 @@ function noitapatcher.PhysBodySetTransform(component_id, x, y, r, vx, vy, av) en
 ---@return number box2d angular velocity
 function noitapatcher.PhysBodyGetTransform(component_id) end
 
----Mark the current game mode as a daily. Disables spell progress and if called during mod init makes all spells available for the run.
+---Mark the current game mode as a daily. Disables spell unlocks and if called during mod init makes all spells available for the run.
 ---@param deterministic boolean
 function noitapatcher.SetGameModeDeterministic(deterministic)end
 
