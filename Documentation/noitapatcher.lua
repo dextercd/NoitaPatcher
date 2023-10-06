@@ -143,6 +143,6 @@ function noitapatcher.SetPauseState(value)end
 
 ---Set the current pause state bitfield value.
 ---@return integer current pause state value
-function noitapatcher.GetPauseState(value)end
+function noitapatcher.GetPauseState()end
 
 return noitapatcher
