@@ -139,4 +139,18 @@ struct Message_UseItem {
 
 using send_message_use_item_t = void(__stdcall*)(Entity*, Message_UseItem*);
 
+
+struct GameGlobal {
+    int frame_num;
+    char unknown1[8];
+    struct GameWorld* mGameWorld;
+    void* mGridWorld;
+    void* mTextures;
+    struct CellFactory* mCellFactory;
+    char unknown2[44];
+    int* pause_state;
+};
+
+using get_game_global_t = GameGlobal*(__stdcall*)();
+
 #endif // Header guard

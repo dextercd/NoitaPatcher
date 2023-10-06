@@ -134,4 +134,15 @@ function noitapatcher.PhysBodyGetTransform(component_id) end
 ---@param deterministic boolean
 function noitapatcher.SetGameModeDeterministic(deterministic)end
 
+---Set the current pause state bitfield.
+---0, 1, 4 and >=32 are safe values to use.
+---0 means unpaused, 4 is the escape menu pause, the other safe values don't have any GUI.
+---@param value integer new pause state value
+---@return integer previous pause state value
+function noitapatcher.SetPauseState(value)end
+
+---Set the current pause state bitfield value.
+---@return integer current pause state value
+function noitapatcher.GetPauseState(value)end
+
 return noitapatcher

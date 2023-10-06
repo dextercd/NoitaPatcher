@@ -47,6 +47,7 @@ EntityManager* entity_manager;
 entity_get_by_id_t entity_get_by_id;
 set_active_held_entity_t set_active_held_entity;
 send_message_use_item_t use_item;
+get_game_global_t get_game_global;
 
 void* duplicate_pixel_scene_check = nullptr;
 
@@ -303,6 +304,22 @@ void find_use_item()
     }
 
     use_item = (send_message_use_item_t)result.get_rela_call("UseItem");
+}
+
+void find_get_game_global()
+{
+    executable_info noita = ThisExecutableInfo::get();
+    auto pat = make_pattern(
+        Bytes{0xe8}, Capture{"GetGameGlobal", 4},
+        Bytes{0x8b, 0x40, 0x48, 0x8b, 0x00, 0xc1, 0xe8, 0x02, 0xa8, 0x01}
+    );
+    auto result = pat.search(noita, noita.text_start, noita.text_end);
+    if (!result) {
+        std::cerr << "Couldn't find GetGameGlobal\n";
+        return;
+    }
+
+    get_game_global = (get_game_global_t)result.get_rela_call("GetGameGlobal");
 }
 
 void find_duplicate_pixel_scene_check()
@@ -755,7 +772,37 @@ int ComponentUpdatesSetEnabled(lua_State* L)
     return 1;
 }
 
-int luaclose_noitapatcher(lua_State* L);
+int SetPauseState(lua_State* L)
+{
+    int value = luaL_checkinteger(L, 1);
+
+    if (!get_game_global)
+        luaL_error(L, "Couldn't find function for retrieving game global");
+
+    auto GG = get_game_global();
+
+    if (!GG->pause_state)
+        luaL_error(L, "Game global is missing pause state");
+
+    lua_pushinteger(L, *GG->pause_state);
+    *GG->pause_state = value;
+
+    return 1;
+}
+
+int GetPauseState(lua_State* L)
+{
+    if (!get_game_global)
+        luaL_error(L, "Couldn't find function for retrieving game global");
+
+    auto GG = get_game_global();
+
+    if (!GG->pause_state)
+        luaL_error(L, "Game global is missing pause state");
+
+    lua_pushinteger(L, *GG->pause_state);
+    return 1;
+}
 
 static const luaL_Reg nplib[] = {
     {"InstallShootProjectileFiredCallbacks", InstallShootProjectileFiredCallbacks},
@@ -779,6 +826,8 @@ static const luaL_Reg nplib[] = {
     {"PhysBodySetTransform", np::PhysBodySetTransform},
     {"PhysBodyGetTransform", np::PhysBodyGetTransform},
     {"SetGameModeDeterministic", np::SetGameModeDeterministic},
+    {"SetPauseState", SetPauseState},
+    {"GetPauseState", GetPauseState},
     {},
 };
 
@@ -792,6 +841,8 @@ lua_State* luaL_newstate_hook()
     GlobalExtensions::instance().grant_extensions(new_state);
     return new_state;
 }
+
+int luaclose_noitapatcher(lua_State* L);
 
 extern "C" __declspec(dllexport)
 int luaopen_noitapatcher(lua_State* L)
@@ -818,6 +869,7 @@ int luaopen_noitapatcher(lua_State* L)
         find_game_mode();
         find_deathmatch();
         find_use_item();
+        find_get_game_global();
         find_duplicate_pixel_scene_check();
         find_system_manager();
         find_entity_serialisation();
@@ -876,7 +928,5 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 package.cpath = package.cpath .. ";./mods/NoitaPatcher/?.dll"
 np = require("noitapatcher")
-function OnProjectileFired() end
-OnProjectileFiredPost = OnProjectileFired
 
 */
