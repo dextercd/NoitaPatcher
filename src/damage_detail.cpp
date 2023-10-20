@@ -24,7 +24,7 @@ std::vector<DamageDetails> damage_details;
 
 struct DamageThing {
     void* entity;
-    char damage_by_type[0x3c];
+    char damage_by_type[0x40];
     vec2 impulse;
     vec2 world_pos;
     float knockback_force;
