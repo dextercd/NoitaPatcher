@@ -1,27 +1,31 @@
 cmake_minimum_required(VERSION 3.26)
 
-set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
-
 project(NoitaPatcher
-    VERSION 1.19.2
+    VERSION 1.19.2.0
     HOMEPAGE_URL "https://github.com/dextercd/NoitaPatcher"
     DESCRIPTION "Noita Modding Extensions"
     LANGUAGES CXX C
 )
 
-set(NoitaPatcher_VERSION_TWEAK 0)
-if (PROJECT_IS_TOP_LEVEL)
-    set(PROJECT_VERSION_TWEAK 0)
+include(CTest)
 
+set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
+
+option(NSEW_EXTERNAL_MAP "Build external map executable" ON)
+option(NSEW_INCLUDE_EXAMPLE "Package examples" ON)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(VISIBILITY_INLINES_HIDDEN ON)
+set(C_VISIBILITY_PRESET hidden)
+set(CXX_VISIBILITY_PRESET hidden)
+
+if (PROJECT_IS_TOP_LEVEL)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "ProgramDatabase")
     if (MSVC)
         add_link_options(/DEBUG)
     endif()
-endif()
-
-# Needed for MINGW to find the LuaJIT dll
-if (MINGW)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES .dll ${CMAKE_FIND_LIBRARY_SUFFIXES})
 endif()
 
 # Don't add lib suffix when crosscompiling from Linux
@@ -33,29 +37,18 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-include(FetchContent)
+# Dependencies
+include(dependencies.cmake)
 
-FetchContent_Declare(MinHook
-    GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
-    GIT_TAG 49d03ad118cf7f6768c79a8f187e14b8f2a07f94)
-FetchContent_MakeAvailable(MinHook)
-
-
-FetchContent_Declare(Zydis
-    GIT_REPOSITORY https://github.com/zyantific/zydis.git
-    GIT_TAG 4a661c659edaa51c3a459a885add92a216c87612
-)
-option(ZYDIS_BUILD_TOOLS "" OFF)
-option(ZYDIS_BUILD_EXAMPLES "" OFF)
-option(ZYDIS_BUILD_DOXYGEN "" OFF)
-FetchContent_MakeAvailable(Zydis)
-
-find_package(Lua REQUIRED)
-
+# Projects
 add_subdirectory(vs2013)
 add_subdirectory(src)
+add_subdirectory(nsew)
 
 if (NOITAPATCHER_DOCS)
+    set(DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Documentation/_build)
     add_subdirectory(Documentation)
 endif()
+
+# Packaging
 add_subdirectory(packaging)

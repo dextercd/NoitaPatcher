@@ -1,0 +1,4 @@
+<Mod
+    name="Rainbow cursor"
+    description="Your cursor leaves a trail of rainbows"
+    request_no_api_restrictions="1" />

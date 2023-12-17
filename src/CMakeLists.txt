@@ -1,5 +1,3 @@
-set(CMAKE_CXX_STANDARD 20)
-
 add_library(memory_util STATIC
     executable_info.cpp
     memory_pattern.cpp
@@ -69,14 +67,14 @@ target_link_libraries(noitadis PRIVATE memory_util)
 install(
     TARGETS noitapatcher
     COMPONENT NoitaPatcher
-    LIBRARY DESTINATION NoitaPatcher
+    LIBRARY DESTINATION noitapatcher
 )
 
 if (CMAKE_CXX_LINKER_SUPPORTS_PDB)
     install(
         FILES $<TARGET_PDB_FILE:noitapatcher>
         COMPONENT NoitaPatcher
-        DESTINATION NoitaPatcher
+        DESTINATION noitapatcher
         OPTIONAL
     )
 endif()

@@ -1,0 +1,14 @@
+<Mod
+    name="NSEW client"
+    description="Noita Synchronise Expansive Worlds"
+    request_no_api_restrictions="1"
+
+
+    ui_newgame_name="NSEW MP"
+    ui_newgame_description="Sync worlds with other players"
+    ui_newgame_gfx_banner_bg="mods/nsew_client/files/menu_banner_background.png"
+    ui_newgame_gfx_banner_fg="mods/nsew_client/files/menu_banner_overlay.png"
+    is_game_mode="1"
+
+>
+</Mod>

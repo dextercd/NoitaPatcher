@@ -11,7 +11,9 @@ set(CPACK_GENERATOR ZIP)
 set(CPACK_PACKAGE_FILE_NAME
     "${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
-set(CPACK_COMPONENTS_ALL NoitaPatcher NoitaPatcher_Docs)
+set(CPACK_COMPONENTS_ALL
+    NoitaPatcher NoitaPatcher_Docs
+    Documentation NSEW_Client NSEW_Example NSEW_Library NSEW_Server)
 
 set(CPACK_VERBATIM_VARIABLES ON)
 include(CPack)

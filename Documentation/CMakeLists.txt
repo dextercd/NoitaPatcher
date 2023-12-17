@@ -9,17 +9,18 @@ add_custom_target(noitapatcher_docs ALL
 )
 
 install(DIRECTORY ${DOC_BUILD_DIR}/
-    DESTINATION NoitaPatcher/Documentation
+    DESTINATION Documentation
     COMPONENT NoitaPatcher_Docs
+    PATTERN ".*" EXCLUDE
 )
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/noitapatcher.lua
-    DESTINATION NoitaPatcher/modules
+    DESTINATION Modules
     COMPONENT NoitaPatcher_Docs
 )
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/MODULE_README.txt
-    DESTINATION NoitaPatcher/modules
+    DESTINATION Modules
     COMPONENT NoitaPatcher_Docs
     RENAME README.txt
 )
