@@ -1,11 +1,11 @@
-package.cpath = package.cpath .. ";./mods/Hamis/lib/?.dll"
-local np = require("noitapatcher")
+-- All the examples share the same instance of NoitaPatcher that you have to
+-- manually put in your mods folder.
+dofile_once("mods/NoitaPatcher/load.lua")
+-- In real mods you would put it inside your mod folder and the `dofile_once`
+-- would look something like this:
+-- dofile_once("mods/Hamis/NoitaPatcher/load.lua")
 
--- Must define these callbacks else you get errors every
--- time a projectile is fired. Functions are empty since
--- we don't use these callbacks at the moment.
-function OnProjectileFired() end
-function OnProjectileFiredPost() end
+local np = require("noitapatcher")
 
 function OnPlayerSpawned(player_id)
     local x, y = EntityGetTransform(player_id)
