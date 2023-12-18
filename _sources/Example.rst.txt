@@ -13,23 +13,27 @@ This should be the layout of the mod::
     Hamis/
     ├── mod.xml
     ├── init.lua
-    └── lib
-        └── noitapatcher.dll
+    └── NoitaPatcher
+        ├── load.lua
+        └── noitapatcher
+            ├── noitapatcher.dll
+            └── nsew
+                └── ...
 
 mod.xml
 =======
 
-.. literalinclude:: ../Hamis/mod.xml
+.. literalinclude:: ../Examples/Hamis/mod.xml
    :language: xml
 
 init.lua
 ========
 
-.. literalinclude:: ../Hamis/init.lua
+.. literalinclude:: ../Examples/Hamis/init.lua
    :language: lua
    :linenos:
 
-noitapatcher.dll
+NoitaPatcher
 ================
 
 https://github.com/dextercd/NoitaPatcher/releases

@@ -40,8 +40,12 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Hamis/
 ├── mod.xml
 ├── init.lua
-└── lib
-    └── noitapatcher.dll
+└── NoitaPatcher
+    ├── load.lua
+    └── noitapatcher
+        ├── noitapatcher.dll
+        └── nsew
+            └── ...
 </pre></div>
 </div>
 <section id="mod-xml">
@@ -57,14 +61,14 @@
 </section>
 <section id="init-lua">
 <h2>init.lua<a class="headerlink" href="#init-lua" title="Link to this heading">¶</a></h2>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nb">package.cpath</span> <span class="o">=</span> <span class="nb">package.cpath</span> <span class="o">..</span> <span class="s2">&quot;;./mods/Hamis/lib/?.dll&quot;</span>
-<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">np</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;noitapatcher&quot;</span><span class="p">)</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="c1">-- Must define these callbacks else you get errors every</span>
-<span class="linenos"> 5</span><span class="c1">-- time a projectile is fired. Functions are empty since</span>
-<span class="linenos"> 6</span><span class="c1">-- we don&#39;t use these callbacks at the moment.</span>
-<span class="linenos"> 7</span><span class="kr">function</span> <span class="nf">OnProjectileFired</span><span class="p">()</span> <span class="kr">end</span>
-<span class="linenos"> 8</span><span class="kr">function</span> <span class="nf">OnProjectileFiredPost</span><span class="p">()</span> <span class="kr">end</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- All the examples share the same instance of NoitaPatcher that you have to</span>
+<span class="linenos"> 2</span><span class="c1">-- manually put in your mods folder.</span>
+<span class="linenos"> 3</span><span class="n">dofile_once</span><span class="p">(</span><span class="s2">&quot;mods/NoitaPatcher/load.lua&quot;</span><span class="p">)</span>
+<span class="linenos"> 4</span><span class="c1">-- In real mods you would put it inside your mod folder and the `dofile_once`</span>
+<span class="linenos"> 5</span><span class="c1">-- would look something like this:</span>
+<span class="linenos"> 6</span><span class="c1">-- dofile_once(&quot;mods/Hamis/NoitaPatcher/load.lua&quot;)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kd">local</span> <span class="n">np</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;noitapatcher&quot;</span><span class="p">)</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="kr">function</span> <span class="nf">OnPlayerSpawned</span><span class="p">(</span><span class="n">player_id</span><span class="p">)</span>
 <span class="linenos">11</span>    <span class="kd">local</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">EntityGetTransform</span><span class="p">(</span><span class="n">player_id</span><span class="p">)</span>
@@ -117,8 +121,8 @@
 </pre></div>
 </div>
 </section>
-<section id="noitapatcher-dll">
-<h2>noitapatcher.dll<a class="headerlink" href="#noitapatcher-dll" title="Link to this heading">¶</a></h2>
+<section id="noitapatcher">
+<h2>NoitaPatcher<a class="headerlink" href="#noitapatcher" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://github.com/dextercd/NoitaPatcher/releases">https://github.com/dextercd/NoitaPatcher/releases</a></p>
 </section>
 </section>

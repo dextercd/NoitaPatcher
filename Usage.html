@@ -34,18 +34,22 @@
   <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h1>
 <p>To use this API extension, your mod must have <code class="docutils literal notranslate"><span class="pre">request_no_api_restrictions=&quot;1&quot;</span></code>
-specified in its <code class="docutils literal notranslate"><span class="pre">mod.xml</span></code> file. You must place the <code class="docutils literal notranslate"><span class="pre">noitapatcher.dll</span></code> file
+specified in its <code class="docutils literal notranslate"><span class="pre">mod.xml</span></code> file. You must place the <code class="docutils literal notranslate"><span class="pre">NoitaPatcher</span></code> directory
 somewhere in your mod’s file tree.</p>
 <p>Given a mod with the following file structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Hamis/
 ├── mod.xml
 ├── init.lua
-└── lib
-    └── noitapatcher.dll
+└── NoitaPatcher
+    ├── load.lua
+    └── noitapatcher
+        ├── noitapatcher.dll
+        └── nsew
+            └── ...
 </pre></div>
 </div>
 <p>You would load NoitaPatcher with the following code:</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nb">package.cpath</span> <span class="o">=</span> <span class="nb">package.cpath</span> <span class="o">..</span> <span class="s2">&quot;;./mods/Hamis/lib/?.dll&quot;</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">dofile_once</span><span class="p">(</span><span class="s2">&quot;mods/Hamis/NoitaPatcher/load.lua&quot;</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">np</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;noitapatcher&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
