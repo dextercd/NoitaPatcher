@@ -11,7 +11,6 @@ include(CTest)
 
 set(NOITAPATCHER_DOCS OFF BOOL "Try building the Sphinx documentation.")
 
-option(NSEW_EXTERNAL_MAP "Build external map executable" ON)
 option(NSEW_INCLUDE_EXAMPLE "Package examples" ON)
 
 set(CMAKE_CXX_STANDARD 20)
