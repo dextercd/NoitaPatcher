@@ -13,6 +13,8 @@ do_mod_appends = function(filename, ...)
         print("Couldn't detect NoitaPatcher path")
     end
 
+    __nsew_path = noitapatcher_path .. "/noitapatcher/nsew/"
+
     package.cpath = package.cpath .. ";./" .. noitapatcher_path .. "/?.dll"
     package.path = package.path .. ";./" .. noitapatcher_path .. "/?.lua"
 

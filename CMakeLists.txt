@@ -41,9 +41,9 @@ include(dependencies.cmake)
 add_subdirectory(vs2013)
 add_subdirectory(src)
 add_subdirectory(nsew)
+add_subdirectory(Examples)
 
 if (NOITAPATCHER_DOCS)
-    set(DOC_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Documentation/_build)
     add_subdirectory(Documentation)
 endif()
 

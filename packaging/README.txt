@@ -5,6 +5,7 @@ Examples/
     server/
     nsew_client
     rainbow_cursor/
+    Hamis/
 
 These are example projects that use NoitaPatcher functionality.
 
@@ -17,9 +18,11 @@ These are example projects that use NoitaPatcher functionality.
     rainbow_cursor: Mod that changes the world under your cursor to rainbow
     colors.
 
+    Hamis: Mod using NoitaPatcher to make a Hamis entity into the player.
+
 To run the example mods you have to put the NoitaPatcher/ folder into your
-Noita mods/ folder. For your own mod you would usually put the NoitaPatcher/
-folder inside your mod.
+Noita mods/ folder. When developing a mod you would usually put NoitaPatcher/
+inside the mod as an included dependency.
 
 
 Modules/
@@ -33,7 +36,7 @@ README.txt in there for more details.
 Documentation/
 
 Contains documentation. Open the index.html file in a web browser to browse
-them or go to https://dexter.döpping.eu/NoitaPatcher/ for the latest version of
+it or go to https://dexter.döpping.eu/NoitaPatcher/ for the latest version of
 the docs.
 
 

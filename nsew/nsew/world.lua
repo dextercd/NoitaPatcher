@@ -3,7 +3,7 @@
 local world = {}
 
 local ffi = require("ffi")
-local world_ffi = require("nsew.world_ffi")
+local world_ffi = require("noitapatcher.nsew.world_ffi")
 
 local C = ffi.C
 
