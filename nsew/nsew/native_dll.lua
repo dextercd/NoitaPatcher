@@ -1,5 +1,5 @@
 --- Native library. Primarily for internal use.
--- @module nsew.native_dll
+---@module 'noitapatcher.nsew.native_dll'
 
 local ffi = require("ffi")
 

@@ -22,6 +22,7 @@ extern "C" {
 #include "extended_logs.hpp"
 #include "game_pause.hpp"
 #include "game_mode.hpp"
+#include "world_info.hpp"
 #include "global_extensions.hpp"
 #include "lua_util.hpp"
 #include "memory_pattern.hpp"
@@ -804,6 +805,29 @@ int GetPauseState(lua_State* L)
     return 1;
 }
 
+int GetWorldInfo(lua_State* L)
+{
+    auto opt_world_info = find_world_info();
+    if (!opt_world_info)
+        return 0;
+
+    auto& world_info = *opt_world_info;
+
+    lua_newtable(L);
+    lua_pushinteger(L, (std::uintptr_t)world_info.get_cell);
+    lua_setfield(L, -2, "get_cell");
+    lua_pushinteger(L, (std::uintptr_t)world_info.remove_cell);
+    lua_setfield(L, -2, "remove_cell");
+    lua_pushinteger(L, (std::uintptr_t)world_info.construct_cell);
+    lua_setfield(L, -2, "construct_cell");
+    lua_pushinteger(L, (std::uintptr_t)world_info.chunk_loaded);
+    lua_setfield(L, -2, "chunk_loaded");
+    lua_pushinteger(L, (std::uintptr_t)world_info.game_global);
+    lua_setfield(L, -2, "game_global");
+
+    return 1;
+}
+
 static const luaL_Reg nplib[] = {
     {"InstallShootProjectileFiredCallbacks", InstallShootProjectileFiredCallbacks},
     {"InstallDamageDetailsPatch", InstallDamageDetailsPatch},
@@ -828,6 +852,7 @@ static const luaL_Reg nplib[] = {
     {"SetGameModeDeterministic", np::SetGameModeDeterministic},
     {"SetPauseState", SetPauseState},
     {"GetPauseState", GetPauseState},
+    {"GetWorldInfo", GetWorldInfo},
     {},
 };
 
@@ -927,6 +952,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 /*
 
 package.cpath = package.cpath .. ";./mods/NoitaPatcher/?.dll"
+package.path = package.path .. ";./mods/NoitaPatcher/?.lua"
 np = require("noitapatcher")
 
 */

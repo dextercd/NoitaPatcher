@@ -1,7 +1,7 @@
-dofile_once("mods/rainbow_cursor/deps/nsew/load.lua")("mods/rainbow_cursor/deps")
+dofile_once("mods/NoitaPatcher/load.lua")
 
-local ffi = require 'ffi'
-local world_ffi = require("nsew.world_ffi")
+local ffi = require("ffi")
+local world_ffi = require("noitapatcher.nsew.world_ffi")
 
 function get_cursor_position()
     local x, y = DEBUG_GetMouseWorld()
@@ -23,6 +23,11 @@ function OnWorldPostUpdate()
     local chunk_map = grid_world.vtable.get_chunk_map(grid_world)
 
     local cx, cy = get_cursor_position()
+
+    if not world_ffi.chunk_loaded(chunk_map, cx, cy) then
+        return
+    end
+
     local offsets = {-2, -1, 0, 1, 2}
     for _, xoffset in ipairs(offsets) do
         for colnum, col in ipairs(colours) do

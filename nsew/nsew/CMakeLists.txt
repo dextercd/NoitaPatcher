@@ -5,7 +5,7 @@ file(REMOVE_RECURSE "${NSEW_BUILD}")
 file(MAKE_DIRECTORY "${NSEW_BUILD}")
 
 set(SOURCES
-    load.lua native_dll.lua world_ffi.lua world.lua rect.lua
+    native_dll.lua world_ffi.lua world.lua rect.lua
 )
 
 foreach(source IN LISTS SOURCES)
@@ -13,7 +13,7 @@ foreach(source IN LISTS SOURCES)
 endforeach()
 
 install(DIRECTORY "${NSEW_BUILD}"
-    DESTINATION noitapatcher
+    DESTINATION NoitaPatcher/noitapatcher
     COMPONENT NSEW_Library
 )
 
@@ -29,7 +29,7 @@ if (WIN32)
     target_include_directories(nsew_native PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
     install(TARGETS nsew_native
-        DESTINATION noitapatcher/nsew
+        DESTINATION NoitaPatcher/noitapatcher/nsew
         COMPONENT NSEW_Library
     )
 endif()

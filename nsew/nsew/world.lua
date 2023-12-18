@@ -1,5 +1,5 @@
 --- World read / write functionality.
--- @module nsew.world
+---@module 'noitapatcher.nsew.world'
 local world = {}
 
 local ffi = require("ffi")

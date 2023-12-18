@@ -25,6 +25,7 @@ add_library(noitapatcher MODULE
     entity_serialisation.cpp
     physics.cpp
     game_mode.cpp
+    world_info.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
@@ -67,14 +68,14 @@ target_link_libraries(noitadis PRIVATE memory_util)
 install(
     TARGETS noitapatcher
     COMPONENT NoitaPatcher
-    LIBRARY DESTINATION noitapatcher
+    LIBRARY DESTINATION NoitaPatcher
 )
 
 if (CMAKE_CXX_LINKER_SUPPORTS_PDB)
     install(
         FILES $<TARGET_PDB_FILE:noitapatcher>
         COMPONENT NoitaPatcher
-        DESTINATION noitapatcher
+        DESTINATION NoitaPatcher
         OPTIONAL
     )
 endif()

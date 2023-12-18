@@ -6,11 +6,11 @@ local ffi = require("ffi")
 local socket = require("socket")
 
 -- NSEW
-dofile_once("mods/nsew_client/deps/nsew/load.lua")("mods/nsew_client/deps")
+dofile_once("mods/NoitaPatcher/load.lua")
 
-local world_ffi = require("nsew.world_ffi")
-local world = require("nsew.world")
-local rect = require("nsew.rect")
+local world_ffi = require("noitapatcher.nsew.world_ffi")
+local world = require("noitapatcher.nsew.world")
+local rect = require("noitapatcher.nsew.rect")
 local rect_optimiser = rect.Optimiser_new()
 
 dofile("data/scripts/lib/coroutines.lua")

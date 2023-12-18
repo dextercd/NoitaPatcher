@@ -50,5 +50,11 @@ if (NOITAPATCHER_DOCS)
     add_subdirectory(Documentation)
 endif()
 
+# Install NoitaPatcher dir verbatim
+install(DIRECTORY NoitaPatcher/
+    DESTINATION NoitaPatcher
+    COMPONENT NoitaPatcher
+)
+
 # Packaging
 add_subdirectory(packaging)

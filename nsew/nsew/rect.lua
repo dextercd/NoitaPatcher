@@ -1,10 +1,10 @@
 --- Rectangle utilities.
--- @module nsew.rect
+---@module 'noitapatcher.nsew.rect'
 
 local rect = {}
 
 local ffi = require("ffi")
-local native_dll = require("nsew.native_dll")
+local native_dll = require("noitapatcher.nsew.native_dll")
 
 ffi.cdef([[
 

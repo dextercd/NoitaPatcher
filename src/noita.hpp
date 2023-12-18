@@ -152,5 +152,6 @@ struct GameGlobal {
 };
 
 using get_game_global_t = GameGlobal*(__stdcall*)();
+extern get_game_global_t get_game_global;
 
 #endif // Header guard
