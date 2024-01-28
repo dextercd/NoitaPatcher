@@ -569,11 +569,11 @@ int SetPlayerEntity(lua_State* L)
 int EnableGameSimulatePausing(lua_State* L)
 {
     bool enabled = lua_toboolean(L, 1);
-    if (enabled)
-        luaL_error(L, "Reenabling game simulate pausing is not implemented.");
 
     executable_info noita = ThisExecutableInfo::get();
-    disable_game_pause(noita, get_game_pause_data(noita));
+    install_game_pause_patch(noita);
+    set_game_simulate_pausing_enabled(enabled);
+
     return 0;
 }
 

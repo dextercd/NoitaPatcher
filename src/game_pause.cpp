@@ -62,30 +62,19 @@ void make_item_pick_upper_updates_hook(const GamePauseData& game_pause)
 
 }
 
-
 GamePauseData get_game_pause_data(const executable_info& exe)
 {
-    auto callback_str = load_address(exe,
-        find_rdata_string(exe, "Mods_OnPausePreUpdate"));
+    auto callback_str = find_rdata_string(exe, "OnPausePreUpdate");
+    auto call_pause_pattern = make_pattern(Bytes{0xba}, Raw{callback_str});
+    auto call_pause_result = call_pause_pattern.search(exe, exe.text_start, exe.text_end);
 
-    if (!callback_str) {
-        callback_str = load_address(exe,
-            find_rdata_string(exe, "OnPausePreUpdate"));
-    }
+    auto deathmatch_str = find_rdata_string(exe, "ending_no_game_over_menu");
 
-    // The function that uses this string is responsible for invoking the
-    // corresponding callbacks.
-    auto pattern = make_pattern(Raw{callback_str});
+    auto pattern = make_pattern(Raw{deathmatch_str});
     auto search_result = pattern.search(exe, exe.text_start, exe.text_end);
-    auto callback_func = find_function_bounds(exe, search_result.ptr);
-
-    // The DeathmatchUpdate function calls this when the game is paused.
-    auto call_on_pause_pattern = make_pattern(
-        Call{load_address(exe, callback_func.start)}
-    );
-
-    auto call_result = call_on_pause_pattern.search(exe, exe.text_start, exe.text_end);
-    auto deathmatch = find_function_bounds(exe, call_result.ptr);
+    auto deathmatch = find_function_bounds(exe, search_result.ptr);
+    // Fixup wrong function end
+    deathmatch.end = (make_pattern(Bytes{0xc2, 0x04, 0x00})).search(exe, deathmatch.start, exe.text_end).ptr;
 
     auto inventory_gui_pattern = make_pattern(
         Bytes({
@@ -104,73 +93,64 @@ GamePauseData get_game_pause_data(const executable_info& exe)
     std::cout << "item_pick_upper_find: " << item_pick_upper_find.ptr << '\n';
 
     GamePauseData ret{
-        .do_pause_update_callbacks = callback_func,
-        .call_pause_addr = call_result.ptr,
+        .pause_callback_str = callback_str,
+        .call_pause_addr = call_pause_result.ptr,
         .deathmatch_update = deathmatch,
         .update_inventory_gui = find_function_bounds(exe, inventory_gui_find.ptr),
         .update_item_pick_upper = find_function_bounds(exe, item_pick_upper_find.ptr),
     };
 
+    std::cout << (void*)ret.pause_callback_str << '\n';
+    std::cout << (void*)ret.call_pause_addr << '\n';
+    std::cout << (void*)ret.deathmatch_update.start << ", " << ret.deathmatch_update.end << '\n';
+
     return ret;
 }
 
-void disable_game_pause(const executable_info& exe, const GamePauseData& game_pause)
+void __thiscall (*OriginalGameSimulate)(void* this_, float dt);
+
+bool simulate_pausing_enabled = true;
+
+void __thiscall PatchedGameSimulate(void* this_, float dt)
 {
-    static bool game_pause_enabled = true;
-    if (!game_pause_enabled)
+    OriginalGameSimulate(this_, dt);
+
+    auto GG = get_game_global();
+
+    if (!simulate_pausing_enabled) {
+        auto pause_state = *GG->pause_state;
+
+        if (pause_state > 0) {
+            *GG->pause_state = 0;
+            OriginalGameSimulate(this_, dt);
+            *GG->pause_state = pause_state;
+        }
+    }
+}
+
+void install_game_pause_patch(const executable_info& exe)
+{
+    static bool patch_installed = false;
+    if (patch_installed)
         return;
 
-    game_pause_enabled = false;
+    patch_installed = true;
+
+    auto game_pause = get_game_pause_data(exe);
 
     make_inventory_gui_updates_hook(game_pause);
     make_item_pick_upper_updates_hook(game_pause);
 
-    auto deathmatch_asm = disassemble(exe, game_pause.deathmatch_update);
-    auto pause_start = deathmatch_asm.at_loadaddr(load_address(exe, game_pause.call_pause_addr));
-    auto jump_over_pause = pause_start - 1;
-
-    if (jump_over_pause->inst.mnemonic != ZYDIS_MNEMONIC_JLE)
-        return;
-
-    ZyanU64 simulate_start{};
-    ZydisCalcAbsoluteAddress(
-        &jump_over_pause->inst,
-        deathmatch_asm.get_operands(jump_over_pause),
-        jump_over_pause->load_location,
-        &simulate_start
+    MH_CreateHook(
+        (void*)game_pause.deathmatch_update.start,
+        (void*)PatchedGameSimulate,
+        (void**)&OriginalGameSimulate
     );
 
-    const auto pause_end = deathmatch_asm.at_loadaddr(simulate_start);
-    for (auto it = pause_start; it != pause_end; ++it) {
-        if (it->inst.mnemonic != ZYDIS_MNEMONIC_JMP)
-            continue;
+    MH_EnableHook((void*)game_pause.deathmatch_update.start);
+}
 
-        ZyanU64 jump_target{};
-        ZydisCalcAbsoluteAddress(
-            &it->inst,
-            deathmatch_asm.get_operands(it),
-            it->load_location,
-            &jump_target
-        );
-
-        if (jump_target < pause_end->load_location)
-            continue;
-
-        ZydisEncoderRequest req{};
-        req.mnemonic = ZYDIS_MNEMONIC_JMP;
-        req.machine_mode = ZYDIS_MACHINE_MODE_LONG_COMPAT_32;
-        req.operand_count = 1;
-        req.operands[0].type = ZYDIS_OPERAND_TYPE_IMMEDIATE;
-        req.operands[0].imm.u = simulate_start;
-
-        void* const address = real_address(exe, it->load_location);
-        DWORD restore_prot;
-        VirtualProtect(address, it->inst.length, PAGE_READWRITE, &restore_prot);
-
-        ZyanUSize instruction_length = it->inst.length;
-        auto encode_status = ZydisEncoderEncodeInstructionAbsolute(
-                &req, address, &instruction_length, it->load_location);
-
-        VirtualProtect(address, it->inst.length, restore_prot, &restore_prot);
-    };
+void set_game_simulate_pausing_enabled(bool allow)
+{
+    simulate_pausing_enabled = allow;
 }
