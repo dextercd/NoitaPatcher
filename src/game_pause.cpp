@@ -13,6 +13,7 @@
 #include "executable_info.hpp"
 #include "noita.hpp"
 #include "utils.hpp"
+#include "calling_convention.hpp"
 
 extern int player_entity_id;
 
@@ -111,8 +112,11 @@ void __thiscall (*OriginalGameSimulate)(void* this_, float dt);
 
 bool simulate_pausing_enabled = true;
 
-void __thiscall PatchedGameSimulate(void* this_, float dt)
+void __stdcall PatchedGameSimulate(float dt)
 {
+    void* this_;
+    GET_ECX(this_);
+
     OriginalGameSimulate(this_, dt);
 
     auto GG = get_game_global();
