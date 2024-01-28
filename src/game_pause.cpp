@@ -108,7 +108,7 @@ GamePauseData get_game_pause_data(const executable_info& exe)
     return ret;
 }
 
-void __thiscall (*OriginalGameSimulate)(void* this_, float dt);
+void (__thiscall* OriginalGameSimulate)(void* this_, float dt);
 
 bool simulate_pausing_enabled = true;
 
