@@ -250,12 +250,12 @@ void find_component_funcs()
 {
     executable_info noita = ThisExecutableInfo::get();
     auto search_in_func =
-        get_lua_c_binding(current_lua_state, "ComponentGetValue2");
+        get_lua_c_binding(current_lua_state, "ComponentGetIsEnabled");
 
     auto pattern = make_pattern(
         Bytes{0xe8}, Capture{"get_component_by_id", 4},
-        Bytes{0x8b, 0x00},
-        Bytes{0x3b, 0x05}, Pad{4}
+        Bytes{0x8b, 0x08},
+        Bytes{0x3b, 0x0d}, Pad{4}
     );
 
     auto result = pattern.search(noita, (void*)search_in_func, (char*)search_in_func + 1024);
@@ -346,9 +346,9 @@ void find_system_manager()
 {
     auto& noita = ThisExecutableInfo::get();
     auto pattern = make_pattern(
-        Bytes{0xff, 0x77, 0x34, 0xb9},
+        Bytes{0xff}, Pad{1}, Bytes{0x34, 0xb9},
         Capture{"SystemManager", 4},
-        Bytes{0xff}, Pad{1}, Bytes{0x30, 0xe8}
+        Bytes{0xff}
     );
 
     auto result = pattern.search(noita, noita.text_start, noita.text_end);
