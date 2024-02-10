@@ -227,13 +227,14 @@ void find_entity_funcs()
     entity_manager = *entity_result.get<EntityManager**>("EntityManager");
     entity_get_by_id = (entity_get_by_id_t)entity_result.get_rela_call("EntityGet");
 
-    auto set_active_pat = make_pattern(
-        Bytes{0x83, 0xc4, 0x04, 0x89},
-        Pad{1},
-        Bytes{0x58, 0x85, 0xf6}
-    );
+    auto str = find_rdata_string(noita, "item_physics");
+    if (!str) {
+        std::cerr << "Couldn't find 'item_physics' string for set_active_held_entity.\n";
+        return;
+    }
 
-    auto set_active_result = set_active_pat.search(noita, noita.text_start, noita.text_end);
+    auto set_active_result =
+        make_pattern(Raw{str}).search(noita, noita.text_start, noita.text_end);
 
     if (!set_active_result) {
         std::cerr << "Couldn't find set active inventory function\n";
@@ -244,6 +245,8 @@ void find_entity_funcs()
         noita.text_start, (std::uint8_t*)set_active_result.ptr,
         std::begin(function_intro), std::end(function_intro)
     );
+
+    std::cout << "set_active_held_entity: " << (void*)set_active_held_entity << '\n';
 }
 
 void find_component_funcs()
