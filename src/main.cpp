@@ -618,9 +618,7 @@ int UseItem(lua_State* L)
     message.mTarget.x = target_x;
     message.mTarget.y = target_y;
 
-    SetUpdatedEntityId(responsible_entity_id);
     use_item(item_entity, &message);
-    SetUpdatedEntityId(-1);
 
     return 0;
 }
