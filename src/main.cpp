@@ -59,6 +59,33 @@ namespace np {
 np::get_component_by_id_t get_component_by_id;
 }
 
+int* updated_entity_id;
+
+void find_updated_entity_id_var(lua_State* L)
+{
+    const auto& noita = ThisExecutableInfo::get();
+
+    auto lua_GetUpdatedEntityID = get_lua_c_binding(L, "GetUpdatedEntityID");
+    if (!lua_GetUpdatedEntityID)
+        return;
+
+    auto pattern = make_pattern(
+        Bytes{0x8b, 0x35},
+        Capture{"updated_entity_id", 4},
+        Bytes{0x6a, 0x01}
+    );
+
+    auto result = pattern.search(noita,
+        (void*)lua_GetUpdatedEntityID,
+        (char*)lua_GetUpdatedEntityID + 0x300
+    );
+
+    if (!result)
+        return;
+
+    updated_entity_id = result.get<int*>("updated_entity_id");
+}
+
 
 FireWandInfo find_fire_wand()
 {
@@ -437,36 +464,6 @@ void find_game_mode()
     std::cout << "  game_modes_begin: " << np::game_modes_begin << '\n';
 }
 
-lua_CFunction GetUpdatedEntityID_original;
-
-int GetUpdatedEntityID_hook(lua_State* L)
-{
-    if (inject_updated_entity_id == -1)
-        return GetUpdatedEntityID_original(L);
-
-    lua_pushinteger(L, inject_updated_entity_id);
-    return 1;
-}
-
-struct GetUpdatedEntityID_HookCreator {
-    GetUpdatedEntityID_HookCreator()
-    {
-        lua_getglobal(current_lua_state, "GetUpdatedEntityID");
-        auto f = lua_tocfunction (current_lua_state, -1);
-        lua_pop(current_lua_state, 1);
-
-        MH_CreateHook((void*)f, (void*)GetUpdatedEntityID_hook, (void**)&GetUpdatedEntityID_original);
-        MH_EnableHook((void*)f);
-    }
-};
-
-void SetUpdatedEntityId(int entity_id)
-{
-    static GetUpdatedEntityID_HookCreator hook;
-    inject_updated_entity_id = entity_id;
-}
-
-
 struct ShootProjectileFiredHooksCreator {
     ShootProjectileFiredHooksCreator()
     {
@@ -618,7 +615,12 @@ int UseItem(lua_State* L)
     message.mTarget.x = target_x;
     message.mTarget.y = target_y;
 
+    auto restore_entity = *updated_entity_id;
+    *updated_entity_id = item_entity_id;
+
     use_item(item_entity, &message);
+
+    *updated_entity_id = restore_entity;
 
     return 0;
 }
@@ -890,6 +892,7 @@ int luaopen_noitapatcher(lua_State* L)
         vs13::initialise();
         MH_Initialize();
 
+        find_updated_entity_id_var(L);
         find_entity_funcs();
         find_component_funcs();
         find_game_mode();
