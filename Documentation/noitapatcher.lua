@@ -36,7 +36,6 @@ function noitapatcher.SetActiveHeldEntity(entity_id, item_id, unknown, make_nois
 function noitapatcher.SetPlayerEntity(entity_id) end
 
 ---Enables or disables game simulate pausing when opening escape or wand menu.
----You can only disable pausing at the moment, reenabling is not supported.
 ---@param enabled boolean Whether to enable or disable pausing.
 function noitapatcher.EnableGameSimulatePausing(enabled) end
 
@@ -144,5 +143,9 @@ function noitapatcher.SetPauseState(value)end
 ---Set the current pause state bitfield value.
 ---@return integer current pause state value
 function noitapatcher.GetPauseState()end
+
+---Enable or disable inventory cursor interactions.
+---@param enable boolean
+function SetInventoryCursorEnabled(enable)end
 
 return noitapatcher
