@@ -29,6 +29,7 @@ extern "C" {
 #include "noita.hpp"
 #include "physics.hpp"
 #include "x86.hpp"
+#include "noita_ui.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -856,6 +857,7 @@ static const luaL_Reg nplib[] = {
     {"SetPauseState", SetPauseState},
     {"GetPauseState", GetPauseState},
     {"GetWorldInfo", GetWorldInfo},
+    {"SetInventoryCursorEnabled", np::SetInventoryCursorEnabled},
     {},
 };
 

@@ -26,6 +26,7 @@ add_library(noitapatcher MODULE
     physics.cpp
     game_mode.cpp
     world_info.cpp
+    noita_ui.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
