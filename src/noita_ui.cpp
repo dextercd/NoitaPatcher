@@ -28,7 +28,10 @@ void __cdecl disable_drag_drop_hook(int param_3,int param_4,
     void* param_2_00;
     GET_FASTCALL_REGISTER_ARGS(param_1, param_2_00);
 
-    param_12 = 0b1100;
+    param_12 = 0x00200000;
+
+    if (param_16 == 3)
+        param_16 = 4;
 
     original_grid_container(param_1, param_2_00,param_3,param_4,
           param_5,param_6,param_7, param_8,
