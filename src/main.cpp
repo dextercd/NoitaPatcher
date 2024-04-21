@@ -30,6 +30,7 @@ extern "C" {
 #include "physics.hpp"
 #include "x86.hpp"
 #include "noita_ui.hpp"
+#include "crosscall.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -858,6 +859,8 @@ static const luaL_Reg nplib[] = {
     {"GetPauseState", GetPauseState},
     {"GetWorldInfo", GetWorldInfo},
     {"SetInventoryCursorEnabled", np::SetInventoryCursorEnabled},
+    {"CrossCallAdd", np::CrossCallAdd},
+    {"CrossCall", np::CrossCall},
     {},
 };
 
@@ -905,6 +908,8 @@ int luaopen_noitapatcher(lua_State* L)
         find_system_manager();
         find_entity_serialisation();
 
+        GlobalExtensions::instance().add_extension("CrossCall", np::CrossCall);
+
         auto lua_lib = LoadLibraryA("lua51.dll");
         auto newstate_func = (void*)GetProcAddress(lua_lib, "luaL_newstate");
         MH_CreateHook(
@@ -926,6 +931,8 @@ int luaclose_noitapatcher(lua_State* L)
 
     if (current_lua_state != L)
         return 0;  // Different Lua state somehow? ignore
+
+    np::crosscall_reset();
 
     // The Lua state is about to go away, stop using it
     current_lua_state = nullptr;
