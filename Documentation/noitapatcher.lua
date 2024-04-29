@@ -146,6 +146,29 @@ function noitapatcher.GetPauseState()end
 
 ---Enable or disable inventory cursor interactions.
 ---@param enable boolean
-function SetInventoryCursorEnabled(enable)end
+function noitapatcher.SetInventoryCursorEnabled(enable)end
+
+---Create or replace a cross call function
+---@param name string
+---@param f fun(...: (boolean|number|string|nil|lightuserdata)): boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata,boolean|number|string|nil|lightuserdata
+function noitapatcher.CrossCallAdd(name, f)end
+
+---Call a cross call function.
+---Available as noitapatcher.CrossCall from init.lua and just CrossCall everywhere else.
+---@param name string
+---@param ... boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+---@return boolean|number|string|nil|lightuserdata
+function CrossCall(name, ...)end
+
+noitapatcher.CrossCall = CrossCall
 
 return noitapatcher
