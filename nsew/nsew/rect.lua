@@ -127,10 +127,10 @@ local Optimiser_mt_index = {
         native_dll.lib.rectangle_optimiser_reset(opt.impl)
     end,
     size = function(opt)
-        return native_dll.lib.rectangle_optimiser_size()
+        return native_dll.lib.rectangle_optimiser_size(opt.impl)
     end,
     get = function(opt, index)
-        return native_dll.lib.rectangle_optimiser_get(index)
+        return native_dll.lib.rectangle_optimiser_get(opt.impl, index)
     end,
     iterate = function(opt)
         local size = native_dll.lib.rectangle_optimiser_size(opt.impl)
