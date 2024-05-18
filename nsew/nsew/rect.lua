@@ -1,4 +1,4 @@
---- Rectangle utilities.
+---Rectangle utilities.
 ---@module 'noitapatcher.nsew.rect'
 
 ---@class Rect

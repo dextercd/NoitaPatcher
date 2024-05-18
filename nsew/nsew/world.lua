@@ -1,5 +1,5 @@
 ---@diagnostic disable: cast-local-type
---- World read / write functionality.
+---World read / write functionality.
 ---@module 'noitapatcher.nsew.world'
 ---@class World
 local world = {}
@@ -63,19 +63,19 @@ world.EncodedArea = ffi.typeof("struct EncodedArea")
 
 local pliquid_cell = ffi.typeof("struct CLiquidCell*")
 
---- Total bytes taken up by the encoded area
--- @tparam EncodedArea encoded_area
--- @treturn int total number of bytes that encodes the area
--- @usage
--- local data = ffi.string(area, world.encoded_size(area))
--- peer:send(data)
+---Total bytes taken up by the encoded area
+---@param encoded_area EncodedArea
+---@return integer total number of bytes that encodes the area
+---```lua
+---local data = ffi.string(area, world.encoded_size(area))
+---peer:send(data)
+---```
 function world.encoded_size(encoded_area)
     return (ffi.sizeof(world.EncodedAreaHeader) + encoded_area.header.pixel_run_count * ffi.sizeof(world.PixelRun))
 end
 
---- Encode the given rectangle of the world
--- The rectangle defined by {`start_x`, `start_y`, `end_x`, `end_y`} must not
--- exceed 256 in width or height.
+---Encode the given rectangle of the world
+---The rectangle defined by {`start_x`, `start_y`, `end_x`, `end_y`} must not exceed 256 in width or height.
 ---@param chunk_map unknown
 ---@param start_x integer coordinate
 ---@param start_y integer coordinate
@@ -187,7 +187,7 @@ end
 
 local PixelRun_const_ptr = ffi.typeof("struct PixelRun const*")
 
---- Load an encoded area back into the world.
+---Load an encoded area back into the world.
 ---@param grid_world unknown
 ---@param header EncodedAreaHeader header of the encoded area
 ---@param pixel_runs PixelRun[] or ffi array of PixelRun from the encoded area

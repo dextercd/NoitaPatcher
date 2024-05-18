@@ -1,5 +1,5 @@
 ---@diagnostic disable: assign-type-mismatch
---- Noita world functionality exposed.
+---Noita world functionality exposed.
 ---@module 'noitapatcher.nsew.world_ffi'
 
 ---@class WorldFFI
@@ -208,7 +208,7 @@ world_ffi.remove_cell = ffi.cast("remove_cell_f*", world_info.remove_cell)
 ---@type fun(grid_world: GridWorld, x: integer, y: integer, material: Material, memory: ffi.cdata*)
 world_ffi.construct_cell = ffi.cast("construct_cell_f*", world_info.construct_cell)
 
---- Check if a chunk is loaded. x and y are world coordinates.
+---Check if a chunk is loaded. x and y are world coordinates.
 ---```lua
 ---if world_ffi.chunk_loaded(chunk_map, x, y) then
 ---  local cell = world_ffi.get_cell(chunk_map, x, y)

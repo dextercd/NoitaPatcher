@@ -55,13 +55,13 @@ function noitapatcher.EnablePlayerItemPickUpper(enabled) end
 ---Send a 'use item' message causing the item to get activated by the entity's ability component.
 ---@param responsible_entity_id integer Entity that should be seen as responsible for the item's use.
 ---@param item_entity_id integer Wand or other item entity.
----@param ignore_reload boolean _
----@param charge boolean _
----@param started_using_this_frame boolean _
----@param pos_x number _
----@param pos_y number _
----@param target_x number _
----@param target_y number _
+---@param ignore_reload boolean
+---@param charge boolean
+---@param started_using_this_frame boolean
+---@param pos_x number
+---@param pos_y number
+---@param target_x number
+---@param target_y number
 function noitapatcher.UseItem(responsible_entity_id, item_entity_id, ignore_reload, charge, started_using_this_frame, pos_x, pos_y, target_x, target_y) end
 
 ---Patch out logging for a certain string literal.
