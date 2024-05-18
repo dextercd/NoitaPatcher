@@ -1,6 +1,7 @@
 ---@diagnostic disable: cast-local-type
 --- World read / write functionality.
 ---@module 'noitapatcher.nsew.world'
+---@class World
 local world = {}
 
 local ffi = require("ffi")

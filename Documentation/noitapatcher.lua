@@ -1,6 +1,7 @@
 ---@meta 'noitapatcher'
 ---@module noitapatcher
 
+---@class NoitaPatcher
 local noitapatcher = {}
 
 ---Enable OnProjectileFired and OnProjectileFiredPost callbacks.
