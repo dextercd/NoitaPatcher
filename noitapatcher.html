@@ -102,13 +102,27 @@ direction based on random spread.</p>
 
 <dl class="lua staticmethod">
 <dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.SetPlayerEntity">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">SetPlayerEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entity_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.SetPlayerEntity" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">SetPlayerEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entity_id</span></em>, <em class="sig-param"><span class="pre">player_nr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.SetPlayerEntity" title="Link to this definition">¶</a></dt>
 <dd><p>Changes the entity that the game considers to be the player.</p>
 <p>This determines what entity is followed by the camera and whose death ends the game.
 A bunch more stuff is probably tied to this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – The entity to make the game think of as the player.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – The entity to make the game think of as the player.</p></li>
+<li><p><strong>player_nr</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – ? Player number to change. Defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.GetPlayerEntity">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">GetPlayerEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">player_nr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.GetPlayerEntity" title="Link to this definition">¶</a></dt>
+<dd><p>Get the entity that the game considers to be the player.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player_nr</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>) – ? Player number to get the entity of. Defaults to 0</p>
 </dd>
 </dl>
 </dd></dl>
