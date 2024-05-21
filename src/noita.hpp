@@ -110,8 +110,7 @@ extern entity_get_by_id_t entity_get_by_id;
 using set_active_held_entity_t =
     void (__fastcall*)(Entity* entity, Entity* item_entity, bool unk, bool make_noise);
 
-using call_scripts_on_pause_pre_update_t =
-    void (__stdcall*)();
+using call_scripts_on_pause_pre_update_t = void (__stdcall*)();
 
 using update_component_t =
     void (__thiscall*)(void* sys, Entity* entity, void* component);

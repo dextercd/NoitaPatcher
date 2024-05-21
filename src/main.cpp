@@ -558,12 +558,37 @@ int SetActiveHeldEntity(lua_State* L)
     return 0;
 }
 
-// SetPlayerEntity(entity_id: int)
-int SetPlayerEntity(lua_State* L)
+int lua_SetPlayerEntity(lua_State* L)
 {
     int entity_id = luaL_checkinteger(L, 1);
+    int slot_nr = 0;
+
+    if (lua_gettop(L) >= 2)
+        slot_nr = luaL_checkinteger(L, 2);
+
+    if (slot_nr >= g_deathmatch->player_entities.size())
+        return luaL_error(L, "SetPlayerEntity(entity_id, %d) slot number is out of range", slot_nr);
+
     auto entity = entity_get_by_id(entity_manager, entity_id);
-    g_deathmatch->player_entities.front() = entity;
+    g_deathmatch->player_entities[slot_nr] = entity;
+    return 0;
+}
+
+int lua_GetPlayerEntity(lua_State* L)
+{
+    int slot_nr = 0;
+    if (lua_gettop(L) >= 1)
+        slot_nr = luaL_checkinteger(L, 1);
+
+    if (slot_nr >= g_deathmatch->player_entities.size())
+        return luaL_error(L, "GetPlayerEntity(%d) slot number is out of range", slot_nr);
+
+    auto entity = g_deathmatch->player_entities[slot_nr];
+    if (entity) {
+        lua_pushinteger(L, EntityGetId(entity));
+        return 1;
+    }
+
     return 0;
 }
 
@@ -839,7 +864,8 @@ static const luaL_Reg nplib[] = {
     {"SetProjectileSpreadRNG", SetProjectileSpreadRNG},
     {"RegisterPlayerEntityId", RegisterPlayerEntityId},
     {"SetActiveHeldEntity", SetActiveHeldEntity},
-    {"SetPlayerEntity", SetPlayerEntity},
+    {"SetPlayerEntity", lua_SetPlayerEntity},
+    {"GetPlayerEntity", lua_GetPlayerEntity},
     {"EnableGameSimulatePausing", EnableGameSimulatePausing},
     {"EnableInventoryGuiUpdate", EnableInventoryGuiUpdate},
     {"EnablePlayerItemPickUpper", EnablePlayerItemPickUpper},

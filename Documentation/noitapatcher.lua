@@ -34,7 +34,12 @@ function noitapatcher.SetActiveHeldEntity(entity_id, item_id, unknown, make_nois
 ---This determines what entity is followed by the camera and whose death ends the game.
 ---A bunch more stuff is probably tied to this.
 ---@param entity_id integer The entity to make the game think of as the player.
-function noitapatcher.SetPlayerEntity(entity_id) end
+---@param player_nr integer? Player number to change. Defaults to 0
+function noitapatcher.SetPlayerEntity(entity_id, player_nr) end
+
+---Get the entity that the game considers to be the player.
+---@param player_nr integer? Player number to get the entity of. Defaults to 0
+function noitapatcher.GetPlayerEntity(player_nr) end
 
 ---Enables or disables game simulate pausing when opening escape or wand menu.
 ---@param enabled boolean Whether to enable or disable pausing.
