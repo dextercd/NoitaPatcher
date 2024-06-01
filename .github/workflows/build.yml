@@ -20,10 +20,17 @@ jobs:
           cd LuaJIT-2.0.4\LuaJIT-2.0.4\src
           msvcbuild.bat
 
+      # There's vcpkg at C:/vcpkg/vcpkg, but that one has the wrong hashes for
+      # boost, so we can't use it right now.
+      - name: Install latest vcpkg
+        run: |
+          git clone --depth 1 https://github.com/microsoft/vcpkg C:\vcpkg2
+          C:\vcpkg2\bootstrap-vcpkg.bat
+
       - name: Get build dependencies
         run: |
-          C:/vcpkg/vcpkg install boost-system:x86-windows-static
-          C:/vcpkg/vcpkg install boost-asio:x86-windows-static
+          C:/vcpkg2/vcpkg install boost-system:x86-windows-static
+          C:/vcpkg2/vcpkg install boost-asio:x86-windows-static
 
       - name: Install documentation dependencies
         run: |
@@ -38,7 +45,7 @@ jobs:
           call ".\venv\Scripts\activate.bat"
           mkdir build
           cmake -S . -B build -G "Ninja" ^
-            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg2/scripts/buildsystems/vcpkg.cmake ^
             -DVCPKG_TARGET_TRIPLET=x86-windows-static ^
             -DCMAKE_CXX_FLAGS="/D_WIN32_WINNT=0x0601 /DWINVER=0x0601 /DWIN32 /D_WINDOWS /EHsc /MD" ^
             -DLua_ROOT=%CD%\LuaJIT-2.0.4\LuaJIT-2.0.4\src ^
