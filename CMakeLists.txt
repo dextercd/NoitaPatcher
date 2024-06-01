@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 
 project(NoitaPatcher
-    VERSION 1.26.3.0
+    VERSION 1.26.4.0
     HOMEPAGE_URL "https://github.com/dextercd/NoitaPatcher"
     DESCRIPTION "Noita Modding Extensions"
     LANGUAGES CXX C
