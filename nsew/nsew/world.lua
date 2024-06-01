@@ -71,7 +71,7 @@ local pliquid_cell = ffi.typeof("struct CLiquidCell*")
 ---peer:send(data)
 ---```
 function world.encoded_size(encoded_area)
-    return (ffi.sizeof(world.EncodedAreaHeader) + encoded_area.header.pixel_run_count * ffi.sizeof(world.PixelRun))
+    return ffi.sizeof(world.EncodedAreaHeader) + encoded_area.header.pixel_run_count * ffi.sizeof(world.PixelRun)
 end
 
 ---Encode the given rectangle of the world
