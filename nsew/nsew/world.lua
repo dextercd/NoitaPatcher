@@ -227,6 +227,13 @@ function world.decode(grid_world, header, pixel_runs)
 
                 if current_material ~= new_material and new_material ~= 0 then
                     local pixel = world_ffi.construct_cell(grid_world, x, y, world_ffi.get_material_ptr(new_material), nil)
+                    if pixel == nil then
+                        -- TODO: This can happen when the material texture has a
+                        -- transparent pixel at the given coordinate. There's
+                        -- probably a better way to deal with this, but for now
+                        -- we skip positions like this.
+                        goto next_pixel
+                    end
                     local cell_type = pixel.vtable.get_cell_type(pixel)
 
                     if cell_type == C.CELL_TYPE_LIQUID then
@@ -237,6 +244,8 @@ function world.decode(grid_world, header, pixel_runs)
                     ppixel[0] = pixel
                 end
             end
+
+            ::next_pixel::
 
             left = left - 1
             if left <= 0 then
