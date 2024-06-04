@@ -12,6 +12,20 @@ function noitapatcher.InstallShootProjectileFiredCallbacks() end
 ---@return nil
 function noitapatcher.InstallDamageDetailsPatch() end
 
+---@class DamageDetails
+---@field damage_types integer
+---@field ragdoll_fx integer
+---@field impulse [integer, integer]
+---@field world_pos [integer, integer]
+---@field knockback_force number
+---@field blood_multiplier number
+---@field projectile_thats_responsible integer
+
+---Get more info about damage inside a LuaComponent damage callback.
+---You must have previously called np.InstallDamageDetailsPatch for this to work.
+---@return DamageDetails
+function GetDamageDetails() end
+
 ---Sets Noita's internal RNG state to the specified value.
 ---This RNG state is used for many things including setting a fired projectile's
 ---direction based on random spread.
