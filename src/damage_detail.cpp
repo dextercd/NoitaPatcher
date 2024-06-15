@@ -1,3 +1,6 @@
+extern "C" {
+#include <lua.h>
+}
 #include <vector>
 #include <iostream>
 
@@ -19,6 +22,7 @@ struct DamageDetails {
     float knockback_force;
     float blood_multiplier;
     int projectile_thats_responsible;
+    const char* description;
 };
 
 std::vector<DamageDetails> damage_details;
@@ -72,6 +76,7 @@ void __cdecl inflict_damage_hook(
         .knockback_force = damage_args->knockback_force,
         .blood_multiplier = damage_args->blood_multiplier,
         .projectile_thats_responsible = damage_args->projectile_thats_responsible,
+        .description = description.c_str(),
     });
 
     FLOAT_TO_REGISTER(xmm2, damage);
@@ -91,7 +96,7 @@ int GetDamageDetails(lua_State* L)
         return 0;
 
     auto& details = damage_details.back();
-    lua_createtable(L, 0, 7);
+    lua_createtable(L, 0, 8);
 
     lua_pushinteger(L, details.damage_types);
     lua_setfield(L, -2, "damage_types");
@@ -121,6 +126,9 @@ int GetDamageDetails(lua_State* L)
 
     lua_pushinteger(L, details.projectile_thats_responsible);
     lua_setfield(L, -2, "projectile_thats_responsible");
+
+    lua_pushstring(L, details.description);
+    lua_setfield(L, -2, "description");
 
     return 1;
 }

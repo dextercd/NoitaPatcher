@@ -20,6 +20,7 @@ function noitapatcher.InstallDamageDetailsPatch() end
 ---@field knockback_force number
 ---@field blood_multiplier number
 ---@field projectile_thats_responsible integer
+---@field description string
 
 ---Get more info about damage inside a LuaComponent damage callback.
 ---You must have previously called np.InstallDamageDetailsPatch for this to work.
