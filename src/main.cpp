@@ -31,6 +31,7 @@ extern "C" {
 #include "x86.hpp"
 #include "noita_ui.hpp"
 #include "crosscall.hpp"
+#include "version_string.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -887,6 +888,7 @@ static const luaL_Reg nplib[] = {
     {"SetInventoryCursorEnabled", np::SetInventoryCursorEnabled},
     {"CrossCallAdd", np::CrossCallAdd},
     {"CrossCall", np::CrossCall},
+    {"GetVersionString", lua_GetVersionString},
     {},
 };
 

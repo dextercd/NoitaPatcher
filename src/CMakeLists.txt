@@ -28,6 +28,7 @@ add_library(noitapatcher MODULE
     world_info.cpp
     noita_ui.cpp
     crosscall.cpp
+    version_string.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
