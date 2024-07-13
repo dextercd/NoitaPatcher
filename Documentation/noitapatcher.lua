@@ -192,4 +192,9 @@ function CrossCall(name, ...)end
 
 noitapatcher.CrossCall = CrossCall
 
+---Change a magic number
+---@param name string
+---@param value boolean|integer|number
+function noitapatcher.MagicNumbersSetValue(name, value) end
+
 return noitapatcher
