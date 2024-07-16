@@ -30,6 +30,28 @@ struct string {
         size_ = length;
     }
 
+    string& operator=(const string& other) noexcept
+    {
+        if (other.size_ <= capacity_) {
+            std::memcpy(data(), other.data(), other.size_);
+            size_ = other.size_;
+            return *this;
+        }
+
+        deallocate();
+        *this = string{other.data(), other.size_};
+        return *this;
+    }
+
+    string& operator=(string&& other) noexcept
+    {
+        std::swap(buffer, other.buffer);
+        std::swap(size_, other.size_);
+        std::swap(capacity_, other.capacity_);
+        other.deallocate();
+        return *this;
+    }
+
     void resize(std::size_t new_size)
     {
         auto old_size = size();
@@ -64,8 +86,16 @@ struct string {
 
     ~string()
     {
-        if (!is_sso())
+        deallocate();
+    }
+
+    void deallocate()
+    {
+        if (!is_sso()) {
             vs13::operator_delete(buffer);
+            size_ = 0;
+            capacity_ = 15;
+        }
     }
 
     const char* c_str() const

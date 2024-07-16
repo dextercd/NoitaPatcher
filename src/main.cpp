@@ -891,6 +891,7 @@ static const luaL_Reg nplib[] = {
     {"CrossCall", np::CrossCall},
     {"GetVersionString", lua_GetVersionString},
     {"MagicNumbersSetValue", lua_MagicNumbersSetValue},
+    {"MagicNumbersGetList", lua_MagicNumbersGetList},
     {},
 };
 

@@ -6,5 +6,6 @@ extern "C" {
 }
 
 int lua_MagicNumbersSetValue(lua_State* L);
+int lua_MagicNumbersGetList(lua_State* L);
 
 #endif // Header guard
