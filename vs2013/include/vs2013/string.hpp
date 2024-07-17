@@ -33,7 +33,7 @@ struct string {
     string& operator=(const string& other) noexcept
     {
         if (other.size_ <= capacity_) {
-            std::memcpy(data(), other.data(), other.size_);
+            std::memcpy(data(), other.data(), other.size_ + 1);
             size_ = other.size_;
             return *this;
         }
@@ -46,6 +46,7 @@ struct string {
     string& operator=(string&& other) noexcept
     {
         std::swap(buffer, other.buffer);
+        std::memcpy(sso_buffer, other.sso_buffer, sizeof(sso_buffer));
         std::swap(size_, other.size_);
         std::swap(capacity_, other.capacity_);
         other.deallocate();
