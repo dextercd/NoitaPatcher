@@ -1,6 +1,8 @@
 ---@meta 'noitapatcher'
 ---@module noitapatcher
 
+error("This file just contains function signatures for documentation and code-completion. You're not supposed to actually run this file.")
+
 ---@class NoitaPatcher
 local noitapatcher = {}
 
@@ -196,5 +198,10 @@ noitapatcher.CrossCall = CrossCall
 ---@param name string
 ---@param value boolean|integer|number
 function noitapatcher.MagicNumbersSetValue(name, value) end
+
+---@return integer
+function noitapatcher.GetGameModeNr() end
+
+function noitapatcher.ReloadMaterials() end
 
 return noitapatcher
