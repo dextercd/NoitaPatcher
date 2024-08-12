@@ -443,19 +443,16 @@ void find_entity_serialisation()
 void find_game_mode()
 {
     executable_info noita = ThisExecutableInfo::get();
-    auto search_in_func =
-        get_lua_c_binding(current_lua_state, "GameIsModeFullyDeterministic");
-
     auto pattern = make_pattern(
-        Bytes{0xa1}, Capture{"game_mode_nr", 4},
-        Bytes{0x8d, 0x0c, 0x40},
-        Bytes{0xa1}, Capture{"game_modes_begin", 4},
-        Bytes{0xc1, 0xe1, 0x06},
-        Bytes{0x03, 0xc1},
-        Bytes{0x83, 0x78, 0x64, 0x01}
+        Bytes{0x8b, 0x0d},
+        Capture{"game_modes_end", 4},
+        Bytes{0xb8, 0xab, 0xaa, 0xaa, 0x2a, 0x56, 0x57, 0x8b, 0x3d},
+        Capture{"game_modes_begin", 4},
+        Bytes{0x2b, 0xcf, 0xf7, 0xe9, 0x8b, 0x0d},
+        Capture{"game_mode_nr", 4}
     );
 
-    auto result = pattern.search(noita, (void*)search_in_func, (char*)search_in_func + 0x300);
+    auto result = pattern.search(noita, noita.text_start, noita.text_end);
     if (!result) {
         std::cerr << "Couldn't find game mode items.\n";
         return;
@@ -883,7 +880,8 @@ static const luaL_Reg nplib[] = {
     {"DeserializeEntity", np::DeserializeEntity},
     {"PhysBodySetTransform", np::PhysBodySetTransform},
     {"PhysBodyGetTransform", np::PhysBodyGetTransform},
-    {"SetGameModeDeterministic", np::SetGameModeDeterministic},
+    {"SetGameModeDeterministic", np::lua_SetGameModeDeterministic},
+    {"GetGameModeNr", np::lua_GetGameModeNr},
     {"SetPauseState", SetPauseState},
     {"GetPauseState", GetPauseState},
     {"GetWorldInfo", GetWorldInfo},

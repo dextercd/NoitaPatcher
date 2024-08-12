@@ -12,7 +12,8 @@ extern int* game_mode_nr;
 extern void* game_modes_begin;
 
 
-int SetGameModeDeterministic(lua_State*);
+int lua_SetGameModeDeterministic(lua_State*);
+int lua_GetGameModeNr(lua_State* L);
 
 }
 
