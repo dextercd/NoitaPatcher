@@ -33,6 +33,7 @@ extern "C" {
 #include "crosscall.hpp"
 #include "version_string.hpp"
 #include "magic_nums.hpp"
+#include "material.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -892,6 +893,7 @@ static const luaL_Reg nplib[] = {
     {"GetVersionString", lua_GetVersionString},
     {"MagicNumbersSetValue", lua_MagicNumbersSetValue},
     {"MagicNumbersGetList", lua_MagicNumbersGetList},
+    {"ReloadMaterials", lua_ReloadMaterials},
     {},
 };
 

@@ -30,6 +30,7 @@ add_library(noitapatcher MODULE
     crosscall.cpp
     version_string.cpp
     magic_nums.cpp
+    material.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 
