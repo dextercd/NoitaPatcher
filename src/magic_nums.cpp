@@ -234,7 +234,7 @@ int lua_MagicNumbersSetValue(lua_State* L)
         auto value = luaL_checklstring(L, 2, &length);
         *(vs13::string*)magic_num.address = vs13::string{value, length};
     } else {
-        luaL_error(
+        return luaL_error(
             L,
             "Magic number '%s' has unsupported data type '%s' for assignment",
             name,
