@@ -69,31 +69,32 @@ struct CellData {
     bool cell_holes_in_texture;
     bool stainable;
     bool burnable;
-    bool on_fire; /* Created by retype action */
+    bool on_fire;
     int fire_hp;
-    int autoignition_temperature; /* Created by retype action */
-    int _100_minus_autoignition_temp; /* Created by retype action */
+    int autoignition_temperature;
+    int _100_minus_autoignition_temp;
     int temperature_of_fire;
     int generates_smoke;
     int generates_flames;
     bool requires_oxygen;
     char padding1[3];
     struct std_string on_fire_convert_to_material;
-    char unknown3[4];
+    int on_fire_convert_to_material_id;
     struct std_string on_fire_flame_material;
-    char unknown4[4];
+    int on_fire_flame_material_id;
     struct std_string on_fire_smoke_material;
-    char unknown5[4];
+    int on_fire_smoke_material_id;
     struct ConfigExplosion *explosion_config;
     int durability;
     int crackability;
     bool electrical_conductivity;
     bool slippery;
     char padding2[2];
-    float stickyness; /* Created by retype action */
+    float stickyness;
     struct std_string cold_freezes_to_material;
     struct std_string warmth_melts_to_material;
-    char unknown6[8];
+    int warmth_melts_to_material_id;
+    int cold_freezes_to_material_id;
     int16_t cold_freezes_chance_rev;
     int16_t warmth_melts_chance_rev;
     bool cold_freezes_to_dont_do_reverse_reaction;
@@ -129,18 +130,18 @@ struct CellData {
     int solid_static_type;
     float solid_on_collision_splash_power;
     bool solid_on_collision_explode;
-    bool solid_on_sleep_convert; /* Created by retype action */
+    bool solid_on_sleep_convert;
     bool solid_on_collision_convert;
     bool solid_on_break_explode;
     bool solid_go_through_sand;
     bool solid_collide_with_self;
     char padding5[2];
     struct std_string solid_on_collision_material;
-    char unknown8[4];
+    int solid_on_collision_material_id;
     struct std_string solid_break_to_type;
-    char unknown9[4];
+    int solid_break_to_type_id;
     struct std_string convert_to_box2d_material;
-    char unknown10[4];
+    int convert_to_box2d_material_id;
     int vegetation_full_lifetime_growth;
     struct std_string vegetation_sprite;
     bool vegetation_random_flip_x_scale;
@@ -342,7 +343,7 @@ typedef struct Cell* __thiscall construct_cell_f(struct GridWorld*, int x, int y
 
 ---@class ChunkMap pointer type
 ---@class GridWorld pointer type
----@class Material pointer type
+---@class CellData pointer type
 ---@class Cell pointer type
 
 ---Access a pixel in the world.
@@ -356,7 +357,7 @@ world_ffi.get_cell = ffi.cast("get_cell_f*", world_info.get_cell)
 world_ffi.remove_cell = ffi.cast("remove_cell_f*", world_info.remove_cell)
 
 ---Create a new cell. If memory is null pointer it will allocate its own memory.
----@type fun(grid_world: GridWorld, x: integer, y: integer, material: Material, memory: ffi.cdata*)
+---@type fun(grid_world: GridWorld, x: integer, y: integer, material: CellData, memory: ffi.cdata*)
 world_ffi.construct_cell = ffi.cast("construct_cell_f*", world_info.construct_cell)
 
 ---Check if a chunk is loaded. x and y are world coordinates.
@@ -390,10 +391,11 @@ function world_ffi.get_grid_world()
 end
 
 local celldata_size = 0x290
+local CellData_ptr = ffi.typeof("struct CellData*")
 
 ---Turn a standard material id into a material pointer.
 ---@param id integer material id that is used in the standard Noita functions
----@return Material material to internal material data (aka cell data).
+---@return CellData material to internal material data (aka cell data).
 ---```lua
 ---local gold_ptr = world_ffi.get_material_ptr(CellFactory_GetType("gold"))
 ---```
@@ -402,11 +404,11 @@ function world_ffi.get_material_ptr(id)
     local cell_factory = ffi.cast('char**', (game_global + 0x18))[0]
     local begin = ffi.cast('char**', cell_factory + 0x18)[0]
     local ptr = begin + celldata_size * id
-    return ptr
+    return ffi.cast(CellData_ptr, ptr) --[[@as CellData]]
 end
 
 ---Turn a material pointer into a standard material id.
----@param material Material to a material (aka cell data)
+---@param material CellData to a material (aka cell data)
 ---@return integer material id that is accepted by standard Noita functions such as `CellFactory_GetUIName` and `ConvertMaterialOnAreaInstantly`.
 ---```lua
 ---local mat_id = world_ffi.get_material_id(cell.vtable.get_material(cell))

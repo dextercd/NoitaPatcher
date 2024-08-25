@@ -16,7 +16,7 @@ int PhysBodySetTransform(lua_State* L)
 
     auto component = ComponentById(component_id);
     if (!component) {
-        luaL_error(L, "Component not found.");
+        return luaL_error(L, "Component not found.");
     }
 
     auto b2body = *(char**)((char*)component + 0x48);
@@ -37,7 +37,7 @@ int PhysBodyGetTransform(lua_State* L)
 
     auto component = ComponentById(component_id);
     if (!component) {
-        luaL_error(L, "Component not found.");
+        return luaL_error(L, "Component not found.");
     }
 
     auto b2body = *(char**)((char*)component + 0x48);

@@ -34,6 +34,7 @@ extern "C" {
 #include "version_string.hpp"
 #include "magic_nums.hpp"
 #include "material.hpp"
+#include "ecs.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -547,7 +548,7 @@ int SetActiveHeldEntity(lua_State* L)
     auto entity = entity_get_by_id(entity_manager, entity_id);
     auto item = entity_get_by_id(entity_manager, item_id);
     if (!entity)
-        luaL_error(L, "Entity %d not found.", entity_id);
+        return luaL_error(L, "Entity %d not found.", entity_id);
 
     set_active_held_entity(entity, item, unknown, make_noise);
     #ifdef __GNUC__
@@ -808,12 +809,12 @@ int SetPauseState(lua_State* L)
     int value = luaL_checkinteger(L, 1);
 
     if (!get_game_global)
-        luaL_error(L, "Couldn't find function for retrieving game global");
+        return luaL_error(L, "Couldn't find function for retrieving game global");
 
     auto GG = get_game_global();
 
     if (!GG->pause_state)
-        luaL_error(L, "Game global is missing pause state");
+        return luaL_error(L, "Game global is missing pause state");
 
     lua_pushinteger(L, *GG->pause_state);
     *GG->pause_state = value;
@@ -824,12 +825,12 @@ int SetPauseState(lua_State* L)
 int GetPauseState(lua_State* L)
 {
     if (!get_game_global)
-        luaL_error(L, "Couldn't find function for retrieving game global");
+        return luaL_error(L, "Couldn't find function for retrieving game global");
 
     auto GG = get_game_global();
 
     if (!GG->pause_state)
-        luaL_error(L, "Game global is missing pause state");
+        return luaL_error(L, "Game global is missing pause state");
 
     lua_pushinteger(L, *GG->pause_state);
     return 1;
@@ -892,6 +893,8 @@ static const luaL_Reg nplib[] = {
     {"MagicNumbersSetValue", lua_MagicNumbersSetValue},
     {"MagicNumbersGetList", lua_MagicNumbersGetList},
     {"ReloadMaterials", lua_ReloadMaterials},
+    {"GetComponentAddress", np::lua_GetComponentAddress},
+    {"GetEntityAddress", np::lua_GetEntityAddress},
     {},
 };
 
