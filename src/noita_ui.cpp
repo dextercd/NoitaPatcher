@@ -104,7 +104,7 @@ int SetInventoryCursorEnabled(lua_State* L)
     bool enable = lua_toboolean(L, 1);
     auto grid_hook = get_grid_hook();
     if (!grid_hook) {
-        luaL_error(L, "Couldn't hook ui grid container function");
+        return luaL_error(L, "Couldn't hook ui grid container function");
     }
 
     // Enabling hook means disabling cursor
