@@ -41,6 +41,9 @@ int PhysBodyGetTransform(lua_State* L)
     }
 
     auto b2body = *(char**)((char*)component + 0x48);
+    if (!b2body) {
+        return luaL_error(L, "Component has no body");
+    }
 
     lua_pushnumber(L, *(double*)(b2body + 0x58)); // x
     lua_pushnumber(L, *(double*)(b2body + 0x60)); // y
