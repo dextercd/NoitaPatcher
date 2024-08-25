@@ -34,6 +34,7 @@ extern "C" {
 #include "version_string.hpp"
 #include "magic_nums.hpp"
 #include "material.hpp"
+#include "ecs.hpp"
 
 struct FireWandInfo {
     std::uint32_t* rng;
@@ -892,6 +893,8 @@ static const luaL_Reg nplib[] = {
     {"MagicNumbersSetValue", lua_MagicNumbersSetValue},
     {"MagicNumbersGetList", lua_MagicNumbersGetList},
     {"ReloadMaterials", lua_ReloadMaterials},
+    {"GetComponentAddress", np::lua_GetComponentAddress},
+    {"GetEntityAddress", np::lua_GetEntityAddress},
     {},
 };
 

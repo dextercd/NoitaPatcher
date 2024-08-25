@@ -31,6 +31,7 @@ add_library(noitapatcher MODULE
     version_string.cpp
     magic_nums.cpp
     material.cpp
+    ecs.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/noitapatcher.rc
 )
 

@@ -41,6 +41,6 @@ inline void* ComponentById(int id)
     return it.ptr->component_ptr;
 }
 
-}
+} // namespace np
 
 #endif // Header guard
