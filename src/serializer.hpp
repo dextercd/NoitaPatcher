@@ -11,22 +11,22 @@
 // The input/output generated is not the same as that of Poro.
 class Serializer {
 public:
-    virtual Serializer* destructor(bool delet) = 0;
-    virtual bool IsSaving() const = 0;
-    virtual bool IsLoading() const { return !IsSaving(); }
-    virtual bool HasOverflowed() const = 0;
-    virtual void sIO(vs13::string& value) = 0;
-    virtual void bIO(bool& value) = 0;
-    virtual void dIO(double& value) = 0;
-    virtual void fIO(float& value) = 0;
-    virtual void i64IO(std::int64_t& value) = 0;
-    virtual void u64IO(std::uint64_t& value) = 0;
-    virtual void i32IO(std::int32_t& value) = 0;
-    virtual void u32IO(std::uint32_t& value) = 0;
-    virtual void i16IO(std::int16_t& value) = 0;
-    virtual void u16IO(std::uint16_t& value) = 0;
-    virtual void i8IO(std::int8_t& value) = 0;
-    virtual void u8IO(std::uint8_t& value) = 0;
+    virtual Serializer* destructor(bool delet) = 0;        // 00
+    virtual bool IsSaving() const = 0;                     // 04
+    virtual bool IsLoading() const { return !IsSaving(); } // 08
+    virtual bool HasOverflowed() const = 0;                // 0c
+    virtual void sIO(vs13::string& value) = 0;             // 10
+    virtual void bIO(bool& value) = 0;                     // 14
+    virtual void dIO(double& value) = 0;                   // 18
+    virtual void fIO(float& value) = 0;                    // 1c
+    virtual void i64IO(std::int64_t& value) = 0;           // 20
+    virtual void u64IO(std::uint64_t& value) = 0;          // 24
+    virtual void i32IO(std::int32_t& value) = 0;           // 28
+    virtual void u32IO(std::uint32_t& value) = 0;          // 2c
+    virtual void i16IO(std::int16_t& value) = 0;           // 30
+    virtual void u16IO(std::uint16_t& value) = 0;          // 34
+    virtual void i8IO(std::int8_t& value) = 0;             // 38
+    virtual void u8IO(std::uint8_t& value) = 0;            // 3c
 };
 
 class SerialSaver final : public Serializer {
