@@ -441,6 +441,17 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 </dd></dl>
 
 <dl class="lua staticmethod">
+<dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.GetVersionString">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">GetVersionString</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.GetVersionString" title="Link to this definition">¶</a></dt>
+<dd><p>Get Noita version string in this format: “Noita - Build Aug 12 2024 - 21:48:01”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
 <dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.MagicNumbersSetValue">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">MagicNumbersSetValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.MagicNumbersSetValue" title="Link to this definition">¶</a></dt>
 <dd><p>Change a magic number</p>
@@ -455,11 +466,47 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 </dd></dl>
 
 <dl class="lua staticmethod">
+<dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.MagicNumbersGetList">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">MagicNumbersGetList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.MagicNumbersGetList" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">list[MagicNumListEntry]</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
 <dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.GetGameModeNr">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">GetGameModeNr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.GetGameModeNr" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.GetComponentAddress">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">GetComponentAddress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">component_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.GetComponentAddress" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>component_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt class="sig sig-object lua" id="noitapatcher.NoitaPatcher.GetEntityAddress">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">GetEntityAddress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entity_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#noitapatcher.NoitaPatcher.GetEntityAddress" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>entity_id</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">integer</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -472,6 +519,11 @@ after using EnableGameSimulatePausing(false) and entering the wand pickup menu.<
 <dd><p>Get more info about damage inside a LuaComponent damage callback.</p>
 <p>You must have previously called np.InstallDamageDetailsPatch for this to work.</p>
 </dd></dl>
+
+<dl class="lua class">
+<dt class="sig sig-object lua" id="noitapatcher.MagicNumListEntry">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">noitapatcher.</span></span><span class="sig-name descname"><span class="pre">MagicNumListEntry</span></span><a class="headerlink" href="#noitapatcher.MagicNumListEntry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 
