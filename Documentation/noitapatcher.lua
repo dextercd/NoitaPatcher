@@ -194,14 +194,40 @@ function CrossCall(name, ...)end
 
 noitapatcher.CrossCall = CrossCall
 
+---Get Noita version string in this format: "Noita - Build Aug 12 2024 - 21:48:01"
+---@nodiscard
+---@return string
+function noitapatcher.GetVersionString() end
+
 ---Change a magic number
 ---@param name string
 ---@param value boolean|integer|number
 function noitapatcher.MagicNumbersSetValue(name, value) end
 
+---@class MagicNumListEntry
+---@field name string
+---@field address integer
+---@field type "bool" | "int" | "uint" | "float" | "double" | "string" | "unknown"
+
+---@nodiscard
+---@return MagicNumListEntry[]
+function noitapatcher.MagicNumbersGetList() end
+
 ---@return integer
 function noitapatcher.GetGameModeNr() end
 
+---Discard and then reload all material files.
+---You should call ComponentSetValue(world_state, "changed_materials", "") after calling this.
 function noitapatcher.ReloadMaterials() end
+
+---@param component_id integer
+---@nodiscard
+---@return integer
+function noitapatcher.GetComponentAddress(component_id) end
+
+---@param entity_id integer
+---@nodiscard
+---@return integer
+function noitapatcher.GetEntityAddress(entity_id) end
 
 return noitapatcher
