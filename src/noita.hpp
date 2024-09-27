@@ -76,6 +76,7 @@ struct SystemManager {
     vs13::vector<void*> mSystemAutoCreators;
     vs13::vector<ComponentUpdator*> mSystems;
 };
+extern SystemManager* system_manager;
 
 
 // Note: It's really a mix between __fastcall (uses registers) and

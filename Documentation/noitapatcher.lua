@@ -216,6 +216,13 @@ function noitapatcher.MagicNumbersGetList() end
 ---@return integer
 function noitapatcher.GetGameModeNr() end
 
+---@return integer
+function noitapatcher.GetGameModeCount() end
+
+---@param idx integer?
+---@return string
+function noitapatcher.GetGameModeCount(idx) end
+
 ---Discard and then reload all material files.
 ---You should call ComponentSetValue(world_state, "changed_materials", "") after calling this.
 function noitapatcher.ReloadMaterials() end

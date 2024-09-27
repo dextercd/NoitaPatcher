@@ -32,7 +32,7 @@ std::vector<stack_entry> get_stack_trace(lua_State* L, int start_level, int coun
     std::vector<stack_entry> trace;
 
     for (int level = start_level; true; ++level) {
-        if (count != -1 && count-- != 0)
+        if (count != -1 && count-- == 0)
             break;
 
         auto stack = get_stack_entry(L, level);

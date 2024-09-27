@@ -3,18 +3,16 @@
 namespace np {
 
 int* game_mode_nr;
-void* game_modes_begin;
+vs13::vector<game_mode>* game_modes_vec;
 
 int lua_SetGameModeDeterministic(lua_State* L)
 {
-    if (!game_mode_nr || !game_modes_begin)
+    if (!game_mode_nr || !game_modes_vec)
         return 0;
 
     auto deterministic = (bool)lua_toboolean(L, 1);
 
-    auto game_modes = *(char**)game_modes_begin;
-    auto game_mode = game_modes + 0xc0 * *game_mode_nr;
-    *(int*)(game_mode + 0x64) = deterministic ? 1 : 0;
+    (*game_modes_vec)[*game_mode_nr].deterministic = deterministic;
 
     return 0;
 }
@@ -25,6 +23,29 @@ int lua_GetGameModeNr(lua_State* L)
         return luaL_error(L, "Couldn't find game mode number address.");
 
     lua_pushinteger(L, *game_mode_nr);
+    return 1;
+}
+
+int lua_GetGameModeCount(lua_State* L)
+{
+    lua_pushinteger(L, game_modes_vec->size());
+    return 1;
+}
+
+int lua_GetGameModeName(lua_State* L)
+{
+    int nr{};
+    if (lua_gettop(L) == 0) {
+        nr = *game_mode_nr;
+    } else {
+        nr = luaL_checkinteger(L, 1);
+    }
+
+    if (nr < 0 || nr >= game_modes_vec->size()) {
+        return luaL_error(L, "Game mode number out of range");
+    }
+
+    lua_pushstring(L, (*game_modes_vec)[nr].name.c_str());
     return 1;
 }
 

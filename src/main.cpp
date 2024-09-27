@@ -448,7 +448,7 @@ void find_game_mode()
         Bytes{0x8b, 0x0d},
         Capture{"game_modes_end", 4},
         Bytes{0xb8, 0xab, 0xaa, 0xaa, 0x2a, 0x56, 0x57, 0x8b, 0x3d},
-        Capture{"game_modes_begin", 4},
+        Capture{"game_modes_vec", 4},
         Bytes{0x2b, 0xcf, 0xf7, 0xe9, 0x8b, 0x0d},
         Capture{"game_mode_nr", 4}
     );
@@ -460,11 +460,11 @@ void find_game_mode()
     }
 
     np::game_mode_nr = result.get<int*>("game_mode_nr");
-    np::game_modes_begin = result.get<void*>("game_modes_begin");
+    np::game_modes_vec = result.get<vs13::vector<np::game_mode>*>("game_modes_vec");
 
     std::cout << "Found game mode items: " << '\n';
     std::cout << "  game_mode_nr: " << np::game_mode_nr << '\n';
-    std::cout << "  game_modes_begin: " << np::game_modes_begin << '\n';
+    std::cout << "  game_modes_vec: " << np::game_modes_vec << '\n';
 }
 
 struct ShootProjectileFiredHooksCreator {
@@ -883,6 +883,8 @@ static const luaL_Reg nplib[] = {
     {"PhysBodyGetTransform", np::PhysBodyGetTransform},
     {"SetGameModeDeterministic", np::lua_SetGameModeDeterministic},
     {"GetGameModeNr", np::lua_GetGameModeNr},
+    {"GetGameModeName", np::lua_GetGameModeName},
+    {"GetGameModeCount", np::lua_GetGameModeCount},
     {"SetPauseState", SetPauseState},
     {"GetPauseState", GetPauseState},
     {"GetWorldInfo", GetWorldInfo},
