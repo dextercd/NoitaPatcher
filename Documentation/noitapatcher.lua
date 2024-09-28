@@ -221,7 +221,7 @@ function noitapatcher.GetGameModeCount() end
 
 ---@param idx integer?
 ---@return string
-function noitapatcher.GetGameModeCount(idx) end
+function noitapatcher.GetGameModeName(idx) end
 
 ---Discard and then reload all material files.
 ---You should call ComponentSetValue(world_state, "changed_materials", "") after calling this.
