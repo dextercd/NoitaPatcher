@@ -33,5 +33,20 @@ foreach(NP_COMPONENT IN LISTS CPACK_COMPONENTS_ALL)
     )
 endforeach()
 
+include(FetchContent)
+FetchContent_Declare(
+    Handtokening_CMake
+    GIT_REPOSITORY https://github.com/dextercd/Handtokening-CMake.git
+    GIT_TAG b492761e64dffba932a5c51a8123869a1149ed49
+)
+FetchContent_MakeAvailable(Handtokening_CMake)
+
+list(APPEND HT_SIGN_PATTERNS
+    "nsew_server\\.exe" "description=Example one-way world sync server"
+    "nsew_native\\.dll" "description=NSEW Native Module"
+    "noitapatcher\\.dll" "description=Unofficial Modding API Extension"
+)
+include(Handtokening)
+
 set(CPACK_VERBATIM_VARIABLES ON)
 include(CPack)
